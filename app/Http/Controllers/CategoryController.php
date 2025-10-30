@@ -64,7 +64,8 @@ class CategoryController extends Controller
         try {
             $this->category->create([
                 'name' => $request->name,
-                'type' => $request->type
+                'type' => $request->type,
+                'user_id' => $this->user->id
             ]);
 
             DB::commit();

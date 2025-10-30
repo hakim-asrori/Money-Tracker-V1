@@ -27,12 +27,12 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::apiResources(CategoryController::class);
-    Route::apiResources(DebtController::class);
-    Route::apiResources(IncomeController::class);
-    Route::apiResources(InvestmanController::class);
-    Route::apiResources(MutationController::class);
-    Route::apiResources(TransactionController::class);
-    Route::apiResources(WalletController::class);
-    Route::apiResources(WalletTransferController::class);
+    Route::apiResource('category', CategoryController::class);
+    Route::apiResource('debt', DebtController::class);
+    Route::apiResource('income', IncomeController::class);
+    Route::apiResource('investman', InvestmanController::class);
+    Route::apiResource('mutation', MutationController::class);
+    Route::apiResource('transaction', TransactionController::class);
+    Route::apiResource('wallet', WalletController::class);
+    Route::apiResource('wallet-transfer', WalletTransferController::class);
 });

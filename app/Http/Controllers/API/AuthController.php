@@ -58,7 +58,7 @@ class AuthController extends Controller
 
         DB::beginTransaction();
 
-        $user = $this->user->whereEmail($request->email);
+        $user = $this->user->whereEmail($request->email)->first();
         if (!$user) {
             return MessageFixer::warning("email or password wrong!");
         }

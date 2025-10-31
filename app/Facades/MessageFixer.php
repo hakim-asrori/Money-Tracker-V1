@@ -14,7 +14,7 @@ class MessageFixer extends JsonResponse
     ): JsonResponse {
         $response = [
             "code" => $code,
-            "messages" => $messages
+            "message" => $messages
         ];
 
         if ($data || (is_array($data))) {

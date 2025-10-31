@@ -27,6 +27,7 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('category/types', [CategoryController::class, 'types']);
     Route::apiResource('category', CategoryController::class);
     Route::apiResource('debt', DebtController::class);
     Route::apiResource('income', IncomeController::class);

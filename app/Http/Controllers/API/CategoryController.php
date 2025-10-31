@@ -86,7 +86,7 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = $this->category->find($id);
+        $category = $this->category->where('user_id', $this->user->id)->find($id);
         if (!$category) {
             return MessageFixer::notFound('Category not found');
         }
@@ -105,7 +105,7 @@ class CategoryController extends Controller
             return MessageFixer::validator($validator->errors()->first(), $validator->errors(), isList: true);
         }
 
-        $category = $this->category->find($id);
+        $category = $this->category->where('user_id', $this->user->id)->find($id);
         if (!$category) {
             return MessageFixer::notFound('Category not found');
         }
@@ -128,7 +128,7 @@ class CategoryController extends Controller
 
     public function destroy($id)
     {
-        $category = $this->category->find($id);
+        $category = $this->category->where('user_id', $this->user->id)->find($id);
         if (!$category) {
             return MessageFixer::notFound('Category not found');
         }

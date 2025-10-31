@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Enums\CategoryTypeConstant;
 use App\Facades\MessageFixer;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
@@ -55,6 +56,7 @@ class WalletController extends Controller
                 Rule::exists('categories', 'id')
                     ->whereNull('deleted_at')
                     ->where('user_id', $this->user->id)
+                    ->where('type', CategoryTypeConstant::WALLET->value)
             ],
             'name' => 'required|string|min:3|max:100',
             'balance' => 'required|numeric|min:0',
@@ -112,6 +114,7 @@ class WalletController extends Controller
                 Rule::exists('categories', 'id')
                     ->whereNull('deleted_at')
                     ->where('user_id', $this->user->id)
+                    ->where('type', CategoryTypeConstant::WALLET->value)
             ],
             'name' => 'required|string|min:3|max:100',
         ]);
@@ -149,7 +152,7 @@ class WalletController extends Controller
         }
 
         if ($wallet->balance > 0) {
-            return MessageFixer::error('Wallet has balance, cannot delete');
+            return MessageFixer::warning('Wallet has balance, cannot delete');
         }
 
         try {

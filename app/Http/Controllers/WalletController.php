@@ -62,6 +62,7 @@ class WalletController extends Controller
                 Rule::exists('categories', 'id')
                     ->whereNull('deleted_at')
                     ->where('user_id', $this->user->id)
+                    ->where('type', CategoryTypeConstant::WALLET->value)
             ],
             'name' => 'required|string|min:3|max:100',
             'balance' => 'required|numeric|min:0',
@@ -118,6 +119,7 @@ class WalletController extends Controller
                 Rule::exists('categories', 'id')
                     ->whereNull('deleted_at')
                     ->where('user_id', $this->user->id)
+                    ->where('type', CategoryTypeConstant::WALLET->value)
             ],
             'name' => 'required|string|min:3|max:100',
         ]);

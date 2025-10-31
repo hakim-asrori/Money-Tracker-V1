@@ -27,6 +27,22 @@ class IncomeController extends Controller
     {
         $incomeQuery = $this->income
             ->where('user_id', $this->user->id)
+            ->when(
+                $request->filled('category') && $request->get('category') != '-1',
+                fn($q) => $q->where('category_id', $request->get('category'))
+            )
+            ->when(
+                $request->filled('search'),
+                fn($q) => $q->where('name', 'like', "%{$request->search}%")
+            )
+            ->when(
+                $request->filled('publishedAt'),
+                fn($q) => $q->whereDate('published_at', $request->get('publishedAt'))
+            )
+            ->when(
+                $request->filled('wallet') && $request->get('wallet') != '-1',
+                fn($q) => $q->where('wallet_id', $request->get('wallet'))
+            )
             ->with(['category', 'wallet']);
 
         if ($request->boolean('paginate')) {

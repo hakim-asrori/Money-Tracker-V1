@@ -130,7 +130,7 @@ class CategoryController extends Controller
     {
         $category = $this->category->find($id);
         if (!$category) {
-            return MessageFixer::error('Category not found');
+            return MessageFixer::notFound('Category not found');
         }
 
         DB::beginTransaction();

@@ -126,7 +126,7 @@ class WalletTransferController extends Controller
     {
         $walletTransfer = $this->walletTransfer->with(['walletOrigin', 'walletTarget'])->find($id);
         if (!$walletTransfer) {
-            return MessageFixer::error('Wallet Transfer not found');
+            return MessageFixer::notFound('Wallet Transfer not found');
         }
 
         return MessageFixer::success('Wallet Transfer', $walletTransfer);

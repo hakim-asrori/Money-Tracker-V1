@@ -97,7 +97,7 @@ class WalletController extends Controller
     {
         $wallet = $this->wallet->where('user_id', $this->user->id)->with('category')->find($id);
         if (!$wallet) {
-            return MessageFixer::error('Wallet not found');
+            return MessageFixer::notFound('Wallet not found');
         }
 
         return MessageFixer::success('Wallet', $wallet);
@@ -122,7 +122,7 @@ class WalletController extends Controller
 
         $wallet = $this->wallet->where('user_id', $this->user->id)->find($id);
         if (!$wallet) {
-            return MessageFixer::error('Wallet not found');
+            return MessageFixer::notFound('Wallet not found');
         }
 
         DB::beginTransaction();
@@ -145,7 +145,7 @@ class WalletController extends Controller
     {
         $wallet = $this->wallet->where('user_id', $this->user->id)->find($id);
         if (!$wallet) {
-            return MessageFixer::error('Wallet not found');
+            return MessageFixer::notFound('Wallet not found');
         }
 
         if ($wallet->balance > 0) {

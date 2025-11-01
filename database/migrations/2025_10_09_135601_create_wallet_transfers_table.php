@@ -21,7 +21,7 @@ return new class extends Migration
             $table->float('amount', 20, 2)->default(0);
             $table->float('fee', 20, 2)->default(0);
             $table->dateTime('published_at');
-            $table->datetimes();
+            $table->timestamps();
             $table->softDeletes();
         });
     }

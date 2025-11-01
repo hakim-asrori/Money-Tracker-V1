@@ -1,10 +1,19 @@
 import { formatNumber } from '@/lib/utils';
+import transaction from '@/routes/transaction';
 import { TransactionInterface } from '@/types';
+import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { EditIcon, TrashIcon } from 'lucide-react';
+import { EditIcon, EyeIcon, MoreVerticalIcon, TrashIcon } from 'lucide-react';
+import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
 
 type Props = {
     onEdit: (row: TransactionInterface) => void;
@@ -44,17 +53,41 @@ export const columns = (props: Props): ColumnDef<TransactionInterface>[] => {
             header: 'Wallet',
         },
         {
-            accessorKey: 'amount',
-            header: 'Amount',
+            accessorKey: 'fee',
+            header: 'Amount & Fee',
             cell: ({ row }) => {
-                return `Rp ${formatNumber(row.getValue('amount'))}`;
+                return (
+                    <div>
+                        <h1 className="font-bold">
+                            Rp {formatNumber(row.original.amount)}
+                        </h1>
+                        <p className="text-xs">
+                            Fee: Rp {formatNumber(row.original.fee)}
+                        </p>
+                    </div>
+                );
+            },
+        },
+
+        {
+            accessorKey: 'amount',
+            header: 'Total',
+            cell: ({ row }) => {
+                const original = row.original;
+                return (
+                    <div className="text-base font-bold">
+                        Rp {formatNumber(original.amount + original.fee)}
+                    </div>
+                );
             },
         },
         {
-            accessorKey: 'fee',
-            header: 'Fee',
+            accessorKey: 'debt',
+            header: 'Is Debt',
             cell: ({ row }) => {
-                return `Rp ${formatNumber(row.getValue('fee'))}`;
+                return row.original.debt
+                    ? Badge({ variant: 'default', children: 'Yes' })
+                    : Badge({ variant: 'secondary', children: 'No' });
             },
         },
         {
@@ -65,20 +98,34 @@ export const columns = (props: Props): ColumnDef<TransactionInterface>[] => {
 
                 return (
                     <div className="flex items-center justify-end gap-2">
-                        <Button
-                            variant={'outline'}
-                            size={'sm'}
-                            onClick={() => props.onEdit(original)}
-                        >
-                            <EditIcon /> Edit
-                        </Button>
-                        <Button
-                            variant={'destructive'}
-                            size={'sm'}
-                            onClick={() => props.onDelete(original)}
-                        >
-                            <TrashIcon /> Delete
-                        </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant={'ghost'}>
+                                    <MoreVerticalIcon />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent>
+                                <DropdownMenuItem asChild>
+                                    <Link
+                                        href={transaction.show({
+                                            transaction: original.id,
+                                        })}
+                                    >
+                                        <EyeIcon /> Show
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => props.onEdit(original)}
+                                >
+                                    <EditIcon /> Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => props.onDelete(original)}
+                                >
+                                    <TrashIcon /> Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 );
             },

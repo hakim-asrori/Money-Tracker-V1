@@ -29,3 +29,8 @@ export function showToast(flash: any) {
 export function formatNumber(num: number | string) {
     return Intl.NumberFormat('id-ID').format(Number(num));
 }
+
+export const getModelNamePretty = (type: string) => {
+    const rawName = type.split('\\').pop(); // WalletTransfer
+    return rawName?.replace(/([a-z])([A-Z])/g, '$1 $2'); // Wallet Transfer
+};

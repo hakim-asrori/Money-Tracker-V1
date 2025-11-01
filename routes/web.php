@@ -26,6 +26,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('wallet', WalletController::class);
     Route::resource('income', IncomeController::class);
     Route::resource('debt', DebtController::class);
+
+    Route::post('transaction/debt/payment/{target}', [TransactionController::class, 'debtPayment'])->name('transaction.debt.payment');
     Route::resource('transaction', TransactionController::class);
     Route::resource('mutation', MutationController::class);
     Route::resource('wallet-transfer', WalletTransferController::class);

@@ -6,6 +6,7 @@ use App\Enums\CategoryTypeConstant;
 use App\Models\Category;
 use App\Models\Mutation;
 use App\Models\Wallet;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -74,19 +75,11 @@ class WalletController extends Controller
             $wallet = $this->wallet->create([
                 'category_id' => $request->category,
                 'name' => $request->name,
-                'balance' => $request->balance,
                 'user_id' => $this->user->id
             ]);
 
             if ($request->balance > 0) {
-                $wallet->mutation()->create([
-                    'wallet_id' => $wallet->id,
-                    'user_id' => $wallet->user_id,
-                    'type' => Mutation::TYPE_CR,
-                    'amount' => $request->balance,
-                    'current_balance' => $request->balance,
-                    'description' => "Initial balance of {$request->name}",
-                ]);
+                WalletService::createWalletMutation($wallet, $this->user->id, $wallet->id, $request->balance, Mutation::TYPE_CR);
             }
 
             DB::commit();

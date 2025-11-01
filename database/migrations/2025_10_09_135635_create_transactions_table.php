@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use App\Models\Debt;
 use App\Models\User;
 use App\Models\Wallet;
 use Illuminate\Database\Migrations\Migration;
@@ -24,7 +25,7 @@ return new class extends Migration
             $table->float('fee', 20, 2)->default(0);
             $table->string('description', 255);
             $table->dateTime('published_at');
-            $table->datetimes();
+            $table->timestamps();
             $table->softDeletes();
         });
     }

@@ -4,6 +4,7 @@
 
 namespace App\Models;
 
+use App\Enums\CategoryTypeConstant;
 use App\Models\Scopes\UserScope;
 use App\Observers\UserObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -33,6 +34,13 @@ class Category extends Model
      * The attributes that should be cast to native types.
      */
     protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'type' => 'integer', 'status' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+
+    protected $appends = ['type_desc'];
+
+    public function getTypeDescAttribute()
+    {
+        return CategoryTypeConstant::getMessage($this->type);
+    }
 
     public function user()
     {

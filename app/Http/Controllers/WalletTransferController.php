@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Mutation;
 use App\Models\Wallet;
 use App\Models\WalletTransfer;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -94,31 +95,10 @@ class WalletTransferController extends Controller
                 'published_at' => $request->published_at,
             ]);
 
-            $walletTransfer->mutation()->create([
-                'user_id' => $this->user->id,
-                'wallet_id' => $request->wallet_origin,
-                'type' => Mutation::TYPE_DB,
-                'last_balance' => $walletOrigin->balance,
-                'amount' => $amount,
-                'current_balance' => $walletOrigin->balance - $amount,
-                'description' => "Wallet Transfer: remove {$amount} from {$walletOrigin->name}",
-            ]);
-            $walletTransfer->mutation()->create([
-                'user_id' => $this->user->id,
-                'wallet_id' => $request->wallet_target,
-                'type' => Mutation::TYPE_CR,
-                'last_balance' => $walletTarget->balance,
-                'amount' => $request->amount,
-                'current_balance' => $walletTarget->balance + $request->amount,
-                'description' => "Wallet Transfer: add {$request->amount} to {$walletTarget->name}",
-            ]);
+            WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->amount, Mutation::TYPE_DB);
+            WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->fee, Mutation::TYPE_DB);
 
-            $walletOrigin->update([
-                'balance' => $walletOrigin->balance - $amount,
-            ]);
-            $walletTarget->update([
-                'balance' => $walletTarget->balance + $amount,
-            ]);
+            WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletTarget->id, $request->amount, Mutation::TYPE_CR);
 
             DB::commit();
             return redirect()->back()->with('success', 'Wallet Transfer created successfully');

@@ -1,4 +1,4 @@
-import { formatNumber } from '@/lib/utils';
+import { formatNumber, getModelNamePretty } from '@/lib/utils';
 import { MutationInterface } from '@/types';
 import { ColumnDef } from '@tanstack/react-table';
 import { format } from 'date-fns';
@@ -19,6 +19,17 @@ export const columns = (props: Props): ColumnDef<MutationInterface>[] => {
                     {
                         locale: id,
                     },
+                );
+            },
+        },
+        {
+            accessorKey: 'mutable_type',
+            header: 'Inquiry',
+            cell: ({ row }) => {
+                return (
+                    <span className="capitalize">
+                        {getModelNamePretty(row.getValue('mutable_type'))}
+                    </span>
                 );
             },
         },

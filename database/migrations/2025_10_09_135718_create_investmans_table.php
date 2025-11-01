@@ -23,7 +23,7 @@ return new class extends Migration
             $table->enum('status', ['active', 'sold'])->default('active');
             $table->dateTime('purchase_at');
             $table->dateTime('sold_at')->default(null);
-            $table->datetimes();
+            $table->timestamps();
             $table->softDeletes();
         });
     }

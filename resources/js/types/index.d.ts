@@ -99,6 +99,34 @@ export interface TransactionInterface extends CommonColumn {
     published_at: string;
     category: CategoryInterface;
     wallet: WalletInterface;
+    debt?: DebtInterface;
+}
+
+export interface DebtInterface extends CommonColumn {
+    type: 1 | 2;
+    title: string;
+    amount: number;
+    fee: number;
+    description: string;
+    published_at: string;
+    targets: DebtTargetInterface[];
+}
+
+export interface DebtTargetInterface extends CommonColumn {
+    name: string;
+    amount: number;
+    paid_amount: number;
+    remaining_amount: number;
+    status: 0 | 1 | 2 | 3;
+    due_date?: string;
+    debt_payments?: DebtPaymentInterface[];
+}
+
+export interface DebtPaymentInterface extends CommonColumn {
+    amount: number;
+    note: string;
+    paid_at: string;
+    wallet_target: WalletInterface;
 }
 
 export interface MutationInterface extends CommonColumn {
@@ -108,10 +136,12 @@ export interface MutationInterface extends CommonColumn {
     current_balance: number;
     description: string;
     wallet: WalletInterface;
+    mutable_type: string;
     mutable:
         | WalletInterface
         | TransactionInterface
         | DebtInterface
         | IncomeInterface
-        | WalletTransferInterface;
+        | WalletTransferInterface
+        | DebtInterface;
 }

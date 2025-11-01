@@ -22,7 +22,10 @@ export function DeleteConfirm({
 }) {
     return (
         <Dialog open={show} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-[425px]">
+            <DialogContent
+                className="sm:max-w-[425px]"
+                onInteractOutside={(e) => e.preventDefault()}
+            >
                 <Form {...form} className="mb-0">
                     {({ processing, wasSuccessful }) => {
                         if (wasSuccessful) {

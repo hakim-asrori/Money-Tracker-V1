@@ -24,7 +24,7 @@ import { Spinner } from '@/components/ui/spinner';
 import AppLayout from '@/layouts/app-layout';
 import { showToast } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import transaction from '@/routes/transaction';
+import transactionRoute from '@/routes/transaction';
 import {
     BreadcrumbItem,
     CategoryInterface,
@@ -33,7 +33,7 @@ import {
     TransactionInterface,
     WalletInterface,
 } from '@/types';
-import { Form, Head, usePage } from '@inertiajs/react';
+import { Form, Head, Link, usePage } from '@inertiajs/react';
 import { PlusCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -44,7 +44,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Transactions',
-        href: transaction.index().url,
+        href: transactionRoute.index().url,
     },
 ];
 
@@ -52,10 +52,12 @@ export default function Transaction({
     transactions,
     categories,
     wallets,
+    transaction,
 }: {
     transactions: MetaPagination<TransactionInterface>;
     categories: CategoryInterface[];
     wallets: WalletInterface[];
+    transaction?: TransactionInterface;
 }) {
     const page = usePage().props as any as SharedData;
     const [showDialog, setShowDialog] = useState<{
@@ -63,12 +65,14 @@ export default function Transaction({
         show: boolean;
         type: 1 | 2;
     }>({
-        title: '',
-        show: false,
-        type: 1,
+        title: transaction ? 'Edit Transaction' : 'New Transaction',
+        show: transaction ? true : false,
+        type: transaction ? 2 : 1,
     });
     const [transactionSelected, setTransactionSelected] =
-        useState<TransactionInterface>();
+        useState<TransactionInterface>(
+            transaction || ({} as TransactionInterface),
+        );
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
     useEffect(() => {
@@ -86,16 +90,10 @@ export default function Transaction({
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Transactions" />
             <Heading title="Transactions">
-                <Button
-                    onClick={() =>
-                        setShowDialog({
-                            title: 'New Transaction',
-                            show: true,
-                            type: 1,
-                        })
-                    }
-                >
-                    <PlusCircleIcon /> New Transaction
+                <Button asChild>
+                    <Link href={transactionRoute.create()}>
+                        <PlusCircleIcon /> New Transaction
+                    </Link>
                 </Button>
             </Heading>
 
@@ -123,14 +121,18 @@ export default function Transaction({
                     setShowDialog({ ...showDialog, show: e });
                 }}
             >
-                <DialogContent className="space-y-5" isShow={false}>
+                <DialogContent
+                    className="space-y-5"
+                    isShow={false}
+                    onInteractOutside={(e) => e.preventDefault()}
+                >
                     <DialogHeader>
                         <DialogTitle>{showDialog.title}</DialogTitle>
                     </DialogHeader>
 
                     {showDialog.type === 2 && transactionSelected ? (
                         <Form
-                            {...transaction.update.form({
+                            {...transactionRoute.update.form({
                                 transaction: transactionSelected.id,
                             })}
                             className="m-0"
@@ -143,24 +145,12 @@ export default function Transaction({
                                     errors={errors}
                                     processing={processing}
                                     transaction={transactionSelected}
+                                    fromDetail={transaction ? true : false}
                                 />
                             )}
                         </Form>
                     ) : (
-                        <Form
-                            {...transaction.store.form()}
-                            className="m-0"
-                            disableWhileProcessing
-                        >
-                            {({ processing, errors }) => (
-                                <FormTransaction
-                                    categories={categories}
-                                    wallets={wallets}
-                                    errors={errors}
-                                    processing={processing}
-                                />
-                            )}
-                        </Form>
+                        <div></div>
                     )}
                 </DialogContent>
             </Dialog>
@@ -169,7 +159,7 @@ export default function Transaction({
                 <DeleteConfirm
                     show={showConfirm}
                     onClose={() => setShowConfirm(false)}
-                    form={transaction.destroy.form({
+                    form={transactionRoute.destroy.form({
                         transaction: transactionSelected.id,
                     })}
                 />
@@ -184,12 +174,14 @@ function FormTransaction({
     errors,
     processing,
     transaction,
+    fromDetail = false,
 }: {
     categories: CategoryInterface[];
     wallets: WalletInterface[];
     errors: any;
     processing: boolean;
     transaction?: TransactionInterface;
+    fromDetail?: boolean;
 }) {
     return (
         <div className="space-y-5">
@@ -280,8 +272,18 @@ function FormTransaction({
 
             <DialogFooter>
                 <DialogClose asChild>
-                    <Button variant={'secondary'} disabled={processing}>
-                        Cancel
+                    <Button variant={'secondary'} disabled={processing} asChild>
+                        <Link
+                            href={
+                                fromDetail
+                                    ? transactionRoute.show({
+                                          transaction: transaction?.id || 0,
+                                      })
+                                    : transactionRoute.index()
+                            }
+                        >
+                            Cancel
+                        </Link>
                     </Button>
                 </DialogClose>
                 <Button type="submit" disabled={processing}>

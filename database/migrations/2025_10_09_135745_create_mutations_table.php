@@ -23,7 +23,7 @@ return new class extends Migration
             $table->float('amount', 20, 2)->default(0);
             $table->float('current_balance', 20, 2)->default(0);
             $table->string('description', 255)->nullable();
-            $table->datetimes();
+            $table->timestamps();
             $table->softDeletes();
         });
     }

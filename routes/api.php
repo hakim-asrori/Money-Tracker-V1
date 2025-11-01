@@ -28,12 +28,37 @@ Route::prefix('auth')->group(function () {
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('category/types', [CategoryController::class, 'types']);
-    Route::apiResource('category', CategoryController::class);
-    Route::apiResource('debt', DebtController::class);
-    Route::apiResource('income', IncomeController::class);
-    Route::apiResource('investman', InvestmanController::class);
-    Route::apiResource('mutation', MutationController::class);
-    Route::apiResource('transaction', TransactionController::class);
-    Route::apiResource('wallet', WalletController::class);
-    Route::apiResource('wallet-transfer', WalletTransferController::class);
+
+    Route::apiResource('category', CategoryController::class, [
+        "as" => "api"
+    ]);
+
+    Route::apiResource('debt', DebtController::class, [
+        "as" => "api"
+    ]);
+
+    Route::apiResource('income', IncomeController::class, [
+        "as" => "api"
+    ]);
+
+    Route::apiResource('investman', InvestmanController::class, [
+        "as" => "api"
+    ]);
+
+    Route::get('mutation/groups', [MutationController::class, 'mutationGroups']);
+    Route::apiResource('mutation', MutationController::class, [
+        "as" => "api"
+    ]);
+
+    Route::apiResource('transaction', TransactionController::class, [
+        "as" => "api"
+    ]);
+
+    Route::apiResource('wallet', WalletController::class, [
+        "as" => "api"
+    ]);
+
+    Route::apiResource('wallet-transfer', WalletTransferController::class, [
+        "as" => "api"
+    ]);
 });

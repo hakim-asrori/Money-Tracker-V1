@@ -177,7 +177,11 @@ export default function Wallets({
                     setWalletSelected(undefined);
                 }}
             >
-                <DialogContent className="space-y-5" isShow={false}>
+                <DialogContent
+                    className="space-y-5"
+                    isShow={false}
+                    onInteractOutside={(e) => e.preventDefault()}
+                >
                     <DialogHeader>
                         <DialogTitle>{showDialog.title}</DialogTitle>
                     </DialogHeader>

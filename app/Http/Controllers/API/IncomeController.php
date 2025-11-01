@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Income;
 use App\Models\Mutation;
 use App\Models\Wallet;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -84,19 +85,9 @@ class IncomeController extends Controller
                 'published_at' => $request->published_at,
             ]);
 
-            $income->wallet()->update([
-                'balance' => $wallet->balance + $request->amount,
-            ]);
+            $income->wallet()->increment('balance', $request->amount);
 
-            $income->mutation()->create([
-                'user_id' => $this->user->id,
-                'wallet_id' => $request->wallet,
-                'type' => Mutation::TYPE_CR,
-                'last_balance' => $wallet->balance,
-                'amount' => $request->amount,
-                'current_balance' => $wallet->balance + $request->amount,
-                'description' => "Income: add {$request->amount} to {$wallet->name}",
-            ]);
+            WalletService::createWalletMutation($income, $this->user->id, $wallet->id, $request->amount, Mutation::TYPE_CR);
 
             DB::commit();
             return MessageFixer::success('Income successfully created', $income);
@@ -162,19 +153,7 @@ class IncomeController extends Controller
         DB::beginTransaction();
 
         try {
-            $income->mutation()->create([
-                'user_id' => $this->user->id,
-                'wallet_id' => $income->wallet_id,
-                'type' => Mutation::TYPE_DB,
-                'last_balance' => $income->wallet->balance,
-                'amount' => $income->amount,
-                'current_balance' => $income->wallet->balance - $income->amount,
-                'description' => "Income: remove {$income->amount} from {$income->wallet->name}",
-            ]);
-
-            $income->wallet()->update([
-                'balance' => $income->wallet->balance - $income->amount,
-            ]);
+            WalletService::createWalletMutation($income, $this->user->id, $income->wallet_id, $income->amount, Mutation::TYPE_DB);
 
             $income->delete();
 

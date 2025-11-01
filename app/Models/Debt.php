@@ -24,6 +24,12 @@ class Debt extends Model
 {
     use SoftDeletes;
 
+    const TYPE_CREDIT = 1;
+    const TYPE_DEBIT = 2;
+
+    const STATUS_UNPAID = 0;
+    const STATUS_PAID = 1;
+
     /**
      * The attributes that are mass assignable.
      */
@@ -31,11 +37,12 @@ class Debt extends Model
         'user_id',
         'wallet_id',
         'type',
-        'target_name',
-        'target_amount',
+        'title',
+        'amount',
         'description',
-        'due_date',
-        'published_at'
+        'published_at',
+        'transaction_id',
+        'status',
     ];
 
     /**
@@ -56,5 +63,15 @@ class Debt extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
+
+    public function targets()
+    {
+        return $this->hasMany(DebtTarget::class);
     }
 }

@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(Category::class)->references('id')->on('categories');
             $table->string('name');
             $table->float('balance', 20, 2)->default(0);
-            $table->datetimes();
+            $table->timestamps();
             $table->softDeletes();
         });
     }

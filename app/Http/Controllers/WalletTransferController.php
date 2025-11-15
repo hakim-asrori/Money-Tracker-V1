@@ -77,6 +77,11 @@ class WalletTransferController extends Controller
         DB::beginTransaction();
 
         $walletOrigin = $this->wallet->whereUserId($this->user->id)->find($request->wallet_origin);
+        if ($walletOrigin->balance < 1) {
+            DB::rollBack();
+            return redirect()->back()->with('warning', 'Wallet balance is not enough');
+        }
+
         $walletTarget = $this->wallet->whereUserId($this->user->id)->find($request->wallet_target);
 
         $amount = $request->amount + $request->fee;

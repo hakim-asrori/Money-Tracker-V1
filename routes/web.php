@@ -25,7 +25,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('category', CategoryController::class);
     Route::resource('wallet', WalletController::class);
     Route::resource('income', IncomeController::class);
-    Route::resource('debt', DebtController::class);
+
+    Route::prefix('debt')->group(function () {
+        Route::resource('receivables', DebtController::class)
+            ->names('debt.receivables');
+
+        Route::resource('indebtedness', DebtController::class)
+            ->names('debt.indebtedness');
+    });
 
     Route::post('transaction/debt/payment/{target}', [TransactionController::class, 'debtPayment'])->name('transaction.debt.payment');
     Route::resource('transaction', TransactionController::class);

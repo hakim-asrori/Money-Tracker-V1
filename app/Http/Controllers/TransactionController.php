@@ -87,6 +87,9 @@ class TransactionController extends Controller
         ]);
 
         $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
+        if ($wallet->balance < 1) {
+            return redirect()->back()->with('error', 'Wallet balance is not enough');
+        }
 
         DB::beginTransaction();
 
@@ -132,7 +135,7 @@ class TransactionController extends Controller
             return redirect()->route('transaction.index')->with('success', 'Transaction successfully created');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->route('transaction.index')->with('error', $th->getMessage());
+            return redirect()->back()->with('error', $th->getMessage());
         }
     }
 
@@ -228,7 +231,7 @@ class TransactionController extends Controller
 
     public function destroy(Transaction $transaction)
     {
-        return redirect()->back()->with('error', 'Service not available');
+        // return redirect()->back()->with('error', 'Service not available');
 
         DB::beginTransaction();
 
@@ -238,24 +241,24 @@ class TransactionController extends Controller
                     if ($debtTarget->debtPayments->count() > 0) {
                         foreach ($debtTarget->debtPayments as $debtPayment) {
                             WalletService::createWalletMutation($debtPayment, $this->user->id, $debtPayment->wallet_target_id, $debtPayment->amount, Mutation::TYPE_DB);
-
-                            $debtPayment->walletTarget()->decrement('balance', $debtPayment->amount);
                         }
+
+                        $debtTarget->debtPayments()->delete();
                     }
+
+                    $debtTarget->delete();
                 }
 
-                $debtTarget->debtPayments()->delete();
                 $transaction->debt()->delete();
             }
 
             $amount = $transaction->amount + $transaction->fee;
             WalletService::createWalletMutation($transaction, $this->user->id, $transaction->wallet_id, $amount, Mutation::TYPE_CR);
-            $transaction->wallet()->increment('balance', $amount);
 
             $transaction->delete();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Transaction successfully deleted');
+            return redirect()->route('transaction.index')->with('success', 'Transaction successfully deleted');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());

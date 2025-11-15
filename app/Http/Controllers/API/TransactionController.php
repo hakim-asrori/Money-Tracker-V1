@@ -64,6 +64,9 @@ class TransactionController extends Controller
         }
 
         $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
+        if ($wallet->balance < 1) {
+            return redirect()->back()->with('error', 'Wallet balance is not enough');
+        }
 
         DB::beginTransaction();
 

@@ -16,7 +16,7 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Debts',
-        href: debt.index().url,
+        href: debt.receivables.index().url,
     },
 ];
 

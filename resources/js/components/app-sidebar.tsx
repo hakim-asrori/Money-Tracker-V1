@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import category from '@/routes/category';
+import debt from '@/routes/debt';
 import income from '@/routes/income';
 import mutation from '@/routes/mutation';
 import transaction from '@/routes/transaction';
@@ -27,6 +28,7 @@ import {
     LayoutDashboardIcon,
     ListCheckIcon,
     ShoppingCartIcon,
+    UploadCloudIcon,
     Wallet2Icon,
 } from 'lucide-react';
 import AppLogo from './app-logo';
@@ -67,11 +69,21 @@ const mainNavItems: NavItem[] = [
         href: transaction.index().url,
         icon: ShoppingCartIcon,
     },
-    // {
-    //     title: 'Debts',
-    //     href: debt.index().url,
-    //     icon: UploadCloudIcon,
-    // },
+    {
+        title: 'Debts',
+        href: '#',
+        icon: UploadCloudIcon,
+        children: [
+            {
+                title: 'Receivables',
+                href: debt.receivables.index().url,
+            },
+            {
+                title: 'Indebtedness',
+                href: debt.indebtedness.index().url,
+            },
+        ],
+    },
     // {
     //     title: 'Investmans',
     //     href: investman.index().url,

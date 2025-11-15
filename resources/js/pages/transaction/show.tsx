@@ -1,3 +1,4 @@
+import { DeleteConfirm } from '@/components/delete-confirm';
 import Heading from '@/components/heading';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -42,6 +43,7 @@ import {
     EditIcon,
     ListIcon,
     ReceiptTextIcon,
+    TrashIcon,
     UsersIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -73,6 +75,7 @@ export default function TransactionShow({
     const [showDialog, setShowDialog] = useState<boolean>(false);
     const [showHistory, setShowHistory] = useState<boolean>(false);
     const [targetSelected, setTargetSelected] = useState<DebtTargetInterface>();
+    const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
     useEffect(() => {
         if (page.flash.success) {
@@ -86,6 +89,12 @@ export default function TransactionShow({
             <Head title={transaction.title} />
             <Heading title={transaction.title}>
                 <div className="flex items-center gap-2">
+                    <Button
+                        variant={'destructive'}
+                        onClick={() => setShowConfirm(true)}
+                    >
+                        <TrashIcon /> Delete
+                    </Button>
                     <Button variant={'secondary'} asChild>
                         <Link
                             href={
@@ -567,6 +576,16 @@ export default function TransactionShow({
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+            )}
+
+            {showConfirm && (
+                <DeleteConfirm
+                    show={showConfirm}
+                    onClose={() => setShowConfirm(false)}
+                    form={transactionRoute.destroy.form({
+                        transaction: transaction.id,
+                    })}
+                />
             )}
         </AppLayout>
     );

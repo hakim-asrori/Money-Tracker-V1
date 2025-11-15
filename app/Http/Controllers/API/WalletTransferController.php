@@ -74,6 +74,10 @@ class WalletTransferController extends Controller
         }
 
         $walletOrigin = $this->wallet->whereUserId($this->user->id)->find($request->wallet_origin);
+        if ($walletOrigin->balance < 1) {
+            return MessageFixer::error('Wallet balance is not enough');
+        }
+
         $walletTarget = $this->wallet->whereUserId($this->user->id)->find($request->wallet_target);
 
         $amount = $request->amount + $request->fee;

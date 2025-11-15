@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('note', 255)->nullable();
             $table->dateTime('paid_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

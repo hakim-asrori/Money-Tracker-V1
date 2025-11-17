@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Debt\IndebtednesController;
 use App\Http\Controllers\Debt\ReceivableController;
-use App\Http\Controllers\DebtController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InvestmanController;
 use App\Http\Controllers\MutationController;
@@ -32,7 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('receivables', ReceivableController::class)
             ->names('debt.receivables');
 
-        Route::resource('indebtedness', DebtController::class)
+        Route::resource('indebtedness', IndebtednesController::class)
             ->names('debt.indebtedness');
     });
 

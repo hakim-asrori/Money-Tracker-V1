@@ -78,10 +78,10 @@ const mainNavItems: NavItem[] = [
                 title: 'Receivables',
                 href: debt.receivables.index().url,
             },
-            {
-                title: 'Indebtedness',
-                href: debt.indebtedness.index().url,
-            },
+            // {
+            //     title: 'Indebtedness',
+            //     href: debt.indebtedness.index().url,
+            // },
         ],
     },
     // {

@@ -80,6 +80,10 @@ const breadcrumbs: BreadcrumbItem[] = [
         title: 'Debts',
         href: debt.receivables.index().url,
     },
+    {
+        title: 'Receivables',
+        href: debt.receivables.index().url,
+    },
 ];
 
 export default function Debt({

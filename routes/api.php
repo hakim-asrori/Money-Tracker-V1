@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
-use App\Http\Controllers\API\DebtController;
 use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\InvestmanController;
 use App\Http\Controllers\API\MutationController;
@@ -30,10 +29,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('category/types', [CategoryController::class, 'types']);
 
     Route::apiResource('category', CategoryController::class, [
-        "as" => "api"
-    ]);
-
-    Route::apiResource('debt', DebtController::class, [
         "as" => "api"
     ]);
 

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\Debt\ReceivableController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\InvestmanController;
@@ -27,7 +28,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('income', IncomeController::class);
 
     Route::prefix('debt')->group(function () {
-        Route::resource('receivables', DebtController::class)
+        Route::post('receivables/payment/{receivable}', [ReceivableController::class, 'payment'])->name('debt.receivables.payment');
+        Route::resource('receivables', ReceivableController::class)
             ->names('debt.receivables');
 
         Route::resource('indebtedness', DebtController::class)

@@ -109,7 +109,12 @@ export interface DebtInterface extends CommonColumn {
     fee: number;
     description: string;
     published_at: string;
+    total_paid_amount: number;
+    total_remaining_amount: number;
+    wallet: WalletInterface;
+    transaction: TransactionInterface;
     targets: DebtTargetInterface[];
+    target: DebtTargetInterface;
 }
 
 export interface DebtTargetInterface extends CommonColumn {

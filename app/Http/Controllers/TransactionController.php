@@ -171,10 +171,6 @@ class TransactionController extends Controller
                 $target->update([
                     'status' => DebtTarget::STATUS_PAID
                 ]);
-
-                $target->debt()->update([
-                    'status' => Debt::STATUS_PAID
-                ]);
             }
 
             $target->debtPayments()->create([
@@ -231,9 +227,9 @@ class TransactionController extends Controller
 
     public function destroy(Transaction $transaction)
     {
-        // return redirect()->back()->with('error', 'Service not available');
-
         DB::beginTransaction();
+
+        $transaction->load(['wallet', 'debt.targets.debtPayments.walletTarget']);
 
         try {
             if ($transaction->debt) {

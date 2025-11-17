@@ -509,7 +509,7 @@ export default function TransactionShow({
                                         <CardTitle>Remaining</CardTitle>
                                     </CardHeader>
                                     <CardContent className="px-4">
-                                        <CardTitle className="text-lg font-bold text-red-600">
+                                        <CardTitle className="text-lg font-bold text-amber-600">
                                             Rp{' '}
                                             {formatNumber(
                                                 targetSelected.remaining_amount,

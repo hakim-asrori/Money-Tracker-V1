@@ -70,6 +70,11 @@ class Debt extends Model
         return $this->belongsTo(Transaction::class);
     }
 
+    public function target()
+    {
+        return $this->hasOne(DebtTarget::class);
+    }
+
     public function targets()
     {
         return $this->hasMany(DebtTarget::class);

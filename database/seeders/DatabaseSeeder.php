@@ -34,19 +34,19 @@ class DatabaseSeeder extends Seeder
         //     ]
         // );
 
-        Category::insert([
-            'user_id' => $user->id,
-            'name' => 'Makanan',
-            'type' => CategoryTypeConstant::TRANSACTION->value,
-            'updated_at' => now(),
-            'created_at' => now(),
-        ]);
-        Category::insert([
-            'user_id' => $user->id,
-            'name' => 'Bank',
-            'type' => CategoryTypeConstant::WALLET->value,
-            'updated_at' => now(),
-            'created_at' => now(),
-        ]);
+        // Category::insert([
+        //     'user_id' => $user->id,
+        //     'name' => 'Makanan',
+        //     'type' => CategoryTypeConstant::TRANSACTION->value,
+        //     'updated_at' => now(),
+        //     'created_at' => now(),
+        // ]);
+        // Category::insert([
+        //     'user_id' => $user->id,
+        //     'name' => 'Bank',
+        //     'type' => CategoryTypeConstant::WALLET->value,
+        //     'updated_at' => now(),
+        //     'created_at' => now(),
+        // ]);
     }
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Debt;
+namespace App\Http\Controllers\API\Debt;
 
+use App\Facades\MessageFixer;
 use App\Http\Controllers\Controller;
 use App\Models\Debt;
 use App\Models\DebtTarget;
@@ -11,8 +12,8 @@ use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Inertia\Inertia;
 
 class ReceivableController extends Controller
 {
@@ -25,32 +26,25 @@ class ReceivableController extends Controller
 
     public function index(Request $request)
     {
-        $wallets = $this->wallet->where('user_id', $this->user->id)->get();
-
         $debtQuery = $this->debt->query();
         $debtQuery->where('user_id', $this->user->id);
         $debtQuery->where('type', $this->debt::TYPE_CREDIT);
         $debtQuery->with(['wallet', 'target.debtPayments.walletTarget', 'transaction']);
         $debtQuery->withSum('targets as total_remaining_amount', 'remaining_amount');
         $debtQuery->withSum('targets as total_paid_amount', 'paid_amount');
-        $debts = $debtQuery->paginate();
 
-        return Inertia::render('debt/receivable/index', [
-            'debts' => $debts,
-            'wallets' => $wallets,
-        ]);
+        if ($request->boolean('paginate')) {
+            $debts = $debtQuery->paginate();
+            return MessageFixer::paginate('Debt Receivables', $debts);
+        }
+
+        $debts = $debtQuery->get();
+        return MessageFixer::success('Debt Receivables', $debts);
     }
-
-
-    public function create()
-    {
-        //
-    }
-
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'wallet' => [
                 'required',
                 'integer',
@@ -65,9 +59,15 @@ class ReceivableController extends Controller
             'due_date' => 'nullable|date_format:Y-m-d\TH:i',
         ]);
 
+        if ($validator->fails()) {
+            return MessageFixer::validator($validator->errors()->first(), $validator->errors(), true);
+        }
+
         $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
 
         DB::beginTransaction();
+
+        $amount = $request->amount + $request->fee;
 
         try {
             $debt = $this->debt->create([
@@ -81,7 +81,6 @@ class ReceivableController extends Controller
                 'published_at' => $request->published_at,
             ]);
 
-            $amount = $request->amount + $request->fee;
             $debt->target()->create([
                 'name' => $request->target,
                 'amount' => $amount,
@@ -95,23 +94,42 @@ class ReceivableController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Debt receivable created successfully');
+            return MessageFixer::success('Debt receivable created successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', $th->getMessage());
+
+            if ($th->getCode() === MessageFixer::HTTP_BAD_REQUEST) {
+                return MessageFixer::warning($th->getMessage());
+            }
+
+            return MessageFixer::error($th->getMessage());
         }
     }
 
 
     public function show(string $id)
     {
-        abort(404);
+        $receivable = $this->debt->where('user_id', $this->user->id)->find($id);
+        if (!$receivable) {
+            return MessageFixer::notFound('Debt receivable not found');
+        }
+
+        $receivable->load(['target.debtPayments.walletTarget', 'transaction']);
+        $receivable->loadSum('targets as total_remaining_amount', 'remaining_amount');
+        $receivable->loadSum('targets as total_paid_amount', 'paid_amount');
+
+        return MessageFixer::success('Debt receivable', $receivable);
     }
 
 
-    public function update(Request $request, Debt $receivable)
+    public function update(Request $request, $id)
     {
-        $request->validate([
+        $receivable = $this->debt->where('user_id', $this->user->id)->find($id);
+        if (!$receivable) {
+            return MessageFixer::notFound('Debt receivable not found');
+        }
+
+        $validator = Validator::make($request->all(), [
             'title' => 'required|string|min:3|max:100',
             'target' => 'required|string|min:3|max:100',
             'description' => 'required|string|min:3|max:255',
@@ -119,6 +137,9 @@ class ReceivableController extends Controller
             'due_date' => 'nullable|date_format:Y-m-d\TH:i',
         ]);
 
+        if ($validator->fails()) {
+            return MessageFixer::validator($validator->errors()->first(), $validator->errors(), true);
+        }
 
         DB::beginTransaction();
 
@@ -135,32 +156,41 @@ class ReceivableController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Debt receivable updated successfully');
+            return MessageFixer::success('Debt receivable updated successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', $th->getMessage());
+            return MessageFixer::error($th->getMessage());
         }
     }
 
-    public function payment(Request $request, Debt $receivable)
+    public function payment(Request $request, $id)
     {
-        $request->validate([
+        $receivable = $this->debt->where('user_id', $this->user->id)->find($id);
+        if (!$receivable) {
+            return MessageFixer::notFound('Debt receivable not found');
+        }
+
+        $validator = Validator::make($request->all(), [
             'wallet' => [
                 'required',
                 'integer',
                 Rule::exists('wallets', 'id')->whereNull('deleted_at')->where('user_id', $this->user->id)
             ],
             'amount' => 'required|numeric|min:0',
-            'note' => 'nullable|string|min:3|max:255',
+            'note' => 'string|min:3|max:255',
             'paid_at' => 'required|date_format:Y-m-d\TH:i',
         ]);
+
+        if ($validator->fails()) {
+            return MessageFixer::validator($validator->errors()->first(), $validator->errors(), true);
+        }
 
         DB::beginTransaction();
 
         $wallet = $this->wallet->where('user_id', $this->user->id)->find($receivable->wallet_id);
 
         if ($request->amount > $receivable->target->remaining_amount) {
-            return redirect()->back()->with('error', 'Amount is greater than remaining amount');
+            return MessageFixer::warning('Amount is greater than remaining amount');
         }
 
         try {
@@ -183,17 +213,22 @@ class ReceivableController extends Controller
             WalletService::createWalletMutation($receivable, $this->user->id, $wallet->id, $request->amount, Mutation::TYPE_CR);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Payment made successfully');
+            return MessageFixer::success('Debt payment created successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', $th->getMessage());
+            return MessageFixer::error($th->getMessage());
         }
     }
 
 
-    public function destroy(Debt $receivable)
+    public function destroy($id)
     {
         DB::beginTransaction();
+
+        $receivable = $this->debt->where('user_id', $this->user->id)->find($id);
+        if (!$receivable) {
+            return MessageFixer::notFound('Debt receivable not found');
+        }
 
         try {
             if ($receivable->target->debtPayments->count() > 0) {
@@ -212,10 +247,10 @@ class ReceivableController extends Controller
             $receivable->delete();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Debt receivable deleted successfully');
+            return MessageFixer::success('Debt receivable deleted successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()->back()->with('error', $th->getMessage());
+            return MessageFixer::error($th->getMessage());
         }
     }
 }

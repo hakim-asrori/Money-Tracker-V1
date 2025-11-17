@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\CategoryController;
+use App\Http\Controllers\API\Debt\ReceivableController;
 use App\Http\Controllers\API\IncomeController;
 use App\Http\Controllers\API\InvestmanController;
 use App\Http\Controllers\API\MutationController;
@@ -32,6 +33,11 @@ Route::middleware(['auth:sanctum'])->group(function () {
         "as" => "api"
     ]);
 
+    Route::post('debt/receivable/payment/{receivable}', [ReceivableController::class, 'payment'])->name('api.debt.receivable.payment');
+    Route::apiResource('debt/receivable', ReceivableController::class, [
+        "as" => "api.debt"
+    ]);
+
     Route::apiResource('income', IncomeController::class, [
         "as" => "api"
     ]);
@@ -45,6 +51,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         "as" => "api"
     ]);
 
+    Route::post('transaction/debt/payment/{target}', [TransactionController::class, 'debtPayment'])->name('api.transaction.debt.payment');
     Route::apiResource('transaction', TransactionController::class, [
         "as" => "api"
     ]);

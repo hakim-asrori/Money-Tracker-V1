@@ -163,6 +163,10 @@ class TransactionController extends Controller
 
         DB::beginTransaction();
 
+        if ($request->amount > $target->remaining_amount) {
+            return redirect()->back()->with('error', 'Amount is greater than remaining amount');
+        }
+
         try {
             $target->increment('paid_amount', $request->amount);
             $target->decrement('remaining_amount', $request->amount);

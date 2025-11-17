@@ -14,7 +14,7 @@ class WalletService
             $wallet = Wallet::lockForUpdate()->findOrFail($walletId);
 
             if (!in_array($type, [Mutation::TYPE_CR, Mutation::TYPE_DB])) {
-                throw new \InvalidArgumentException("Invalid mutation type");
+                throw new \InvalidArgumentException("Invalid mutation type", 400);
             }
 
             $lastBalance = $wallet->balance;
@@ -23,7 +23,7 @@ class WalletService
                 : $lastBalance - $amount;
 
             if ($currentBalance < 0) {
-                throw new \Exception("Insufficient balance for debit transaction.");
+                throw new \Exception("Insufficient balance for debit transaction.", 400);
             }
 
             // Create via polymorph relation

@@ -52,7 +52,7 @@ class TransactionController extends Controller
             'fee' => 'required|numeric|min:0',
             'description' => 'required|string|min:3|max:200',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
-            'is_debt' => 'nullable|boolean',
+            'is_debt' => 'required|boolean',
             'targets' => 'required_if:is_debt,true|array',
             'targets.*.user_id' => 'nullable|integer|exists:users,id',
             'targets.*.name' => 'required_without:targets.*.user_id|string|min:3|max:100',
@@ -60,7 +60,7 @@ class TransactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return MessageFixer::validation($validator->errors()->first(), $validator->errors(), true);
+            return MessageFixer::validator($validator->errors()->first(), $validator->errors(), true);
         }
 
         $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
@@ -112,26 +112,33 @@ class TransactionController extends Controller
             return MessageFixer::success('Transaction successfully created', $transaction);
         } catch (\Throwable $th) {
             DB::rollBack();
+            if ($th->getCode() === MessageFixer::HTTP_BAD_REQUEST) {
+                return MessageFixer::warning($th->getMessage());
+            }
             return MessageFixer::error($th->getMessage());
         }
     }
 
     public function debtPayment(Request $request, $id)
     {
-        $target = $this->debtTarget->where('user_id', $this->user->id)->find($id);
+        $target = $this->debtTarget->find($id);
         if (!$target) {
             return MessageFixer::notFound('Target not found');
         }
 
         $validator = Validator::make($request->all(), [
-            'amount' => 'required|numeric|min:0|max:' . $target->remaining_amount,
+            'amount' => 'required|numeric|min:0',
             'wallet' => ['required', 'integer', Rule::exists('wallets', 'id')->where('user_id', $this->user->id)->whereNull('deleted_at')],
             'note' => 'required|string|min:3|max:200',
             'paid_at' => 'required|date_format:Y-m-d\TH:i',
         ]);
 
         if ($validator->fails()) {
-            return MessageFixer::validation($validator->errors()->first(), $validator->errors(), true);
+            return MessageFixer::validator($validator->errors()->first(), $validator->errors(), true);
+        }
+
+        if ($request->amount > $target->remaining_amount) {
+            return MessageFixer::warning('Amount is greater than remaining amount');
         }
 
         DB::beginTransaction();
@@ -188,7 +195,7 @@ class TransactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return MessageFixer::validation($validator->errors()->first(), $validator->errors(), true);
+            return MessageFixer::validator($validator->errors()->first(), $validator->errors(), true);
         }
 
         $transaction = $this->transaction->find($id);
@@ -216,8 +223,6 @@ class TransactionController extends Controller
 
     public function destroy($id)
     {
-        return MessageFixer::error('Service not available');
-
         $transaction = $this->transaction->find($id);
         if (!$transaction) {
             return MessageFixer::notFound('Transaction not found');
@@ -225,21 +230,27 @@ class TransactionController extends Controller
 
         DB::beginTransaction();
 
-        try {
-            $amount = $transaction->amount + $transaction->fee;
-            $transaction->mutation()->create([
-                'user_id' => $this->user->id,
-                'wallet_id' => $transaction->wallet_id,
-                'type' => Mutation::TYPE_CR,
-                'last_balance' => $transaction->wallet->balance,
-                'amount' => $amount,
-                'current_balance' => $transaction->wallet->balance + $amount,
-                'description' => "Transaction: add {$amount} from {$transaction->title}",
-            ]);
+        $transaction->load(['wallet', 'debt.targets.debtPayments.walletTarget']);
 
-            $transaction->wallet()->update([
-                'balance' => $transaction->wallet->balance + $amount,
-            ]);
+        try {
+            if ($transaction->debt) {
+                foreach ($transaction->debt->targets as $debtTarget) {
+                    if ($debtTarget->debtPayments->count() > 0) {
+                        foreach ($debtTarget->debtPayments as $debtPayment) {
+                            WalletService::createWalletMutation($debtPayment, $this->user->id, $debtPayment->wallet_target_id, $debtPayment->amount, Mutation::TYPE_DB);
+                        }
+
+                        $debtTarget->debtPayments()->delete();
+                    }
+
+                    $debtTarget->delete();
+                }
+
+                $transaction->debt()->delete();
+            }
+
+            $amount = $transaction->amount + $transaction->fee;
+            WalletService::createWalletMutation($transaction, $this->user->id, $transaction->wallet_id, $amount, Mutation::TYPE_CR);
 
             $transaction->delete();
 

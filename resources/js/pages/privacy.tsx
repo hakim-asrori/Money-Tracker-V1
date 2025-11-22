@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Page() {
     return (
-        <div className="container mx-auto">
+        <div className="container mx-auto py-10">
             <Head title="Privacy Policy" />
             <div className="prose-custom prose prose-lg">
                 <h1>Privacy Policy</h1>

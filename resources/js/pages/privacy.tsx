@@ -2,7 +2,7 @@ import { Head } from '@inertiajs/react';
 
 export default function Page() {
     return (
-        <div className="container mx-auto">
+        <div className="container mx-auto dark:text-foreground">
             <Head title="Privacy Policy" />
             <div className="prose prose-lg">
                 <h1>Privacy Policy</h1>
@@ -570,7 +570,7 @@ export default function Page() {
                     contact us:
                 </p>
                 <ul>
-                    <li>By email: asep.saepullah251002@gmail.com</li>
+                    <li>By email: khoirulafwan20@gmail.com</li>
                 </ul>
             </div>
         </div>

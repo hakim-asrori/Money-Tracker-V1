@@ -10,7 +10,7 @@ Route::get('/', function () {
 })->name('home');
 Route::get('/privacy', function () {
     return Inertia::render('privacy');
-})->name('home');
+})->name('privacy');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {

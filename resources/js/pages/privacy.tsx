@@ -2,9 +2,9 @@ import { Head } from '@inertiajs/react';
 
 export default function Page() {
     return (
-        <div className="container mx-auto dark:text-foreground">
+        <div className="container mx-auto">
             <Head title="Privacy Policy" />
-            <div className="prose prose-lg">
+            <div className="prose-custom prose prose-lg">
                 <h1>Privacy Policy</h1>
                 <p>Last updated: November 22, 2025</p>
                 <p>

@@ -1,19 +1,15 @@
 <?php
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\Debt\IndebtednesController;
-use App\Http\Controllers\Debt\ReceivableController;
-use App\Http\Controllers\IncomeController;
-use App\Http\Controllers\InvestmanController;
-use App\Http\Controllers\MutationController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\WalletController;
-use App\Http\Controllers\WalletTransferController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\{CategoryController, IncomeController, InvestmanController, MutationController, TransactionController, WalletController, WalletTransferController};
+use App\Http\Controllers\Debt\{IndebtednesController, ReceivableController};
 use Inertia\Inertia;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
+})->name('home');
+Route::get('/privacy', function () {
+    return Inertia::render('privacy');
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {

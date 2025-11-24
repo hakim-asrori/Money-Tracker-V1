@@ -1,16 +1,9 @@
 <?php
 
-use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\API\CategoryController;
-use App\Http\Controllers\API\Debt\ReceivableController;
-use App\Http\Controllers\API\IncomeController;
-use App\Http\Controllers\API\InvestmanController;
-use App\Http\Controllers\API\MutationController;
-use App\Http\Controllers\API\TransactionController;
-use App\Http\Controllers\API\WalletController;
-use App\Http\Controllers\API\WalletTransferController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\{AuthController, CategoryController, IncomeController, InvestmanController, MutationController, ProfileController, TransactionController, WalletController, WalletTransferController};
+use App\Http\Controllers\API\Debt\ReceivableController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,8 +20,12 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::get('category/types', [CategoryController::class, 'types']);
+    Route::prefix('profile')->name('api.profile.')->group(function () {
+        Route::put('update', [ProfileController::class, 'update'])->name('update');
+        Route::put('change-password', [ProfileController::class, 'changePassword'])->name('change-password');
+    });
 
+    Route::get('category/types', [CategoryController::class, 'types']);
     Route::apiResource('category', CategoryController::class, [
         "as" => "api"
     ]);

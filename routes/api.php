@@ -2,12 +2,16 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\{AuthController, CategoryController, IncomeController, InvestmanController, MutationController, ProfileController, TransactionController, WalletController, WalletTransferController};
+use App\Http\Controllers\API\{AuthController, CategoryController, IncomeController, InvestmanController, MutationController, ProfileController, SignatureController, TransactionController, WalletController, WalletTransferController};
 use App\Http\Controllers\API\Debt\ReceivableController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+Route::prefix('signature')->group(function () {
+    Route::post('openssl', [SignatureController::class, 'generateOpenssl'])->name('signature.openssl');
+});
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);

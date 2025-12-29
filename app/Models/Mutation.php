@@ -4,10 +4,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 
 class Mutation extends Model
 {
+    use SoftDeletes;
+
     const TYPE_CR = 'cr';
     const TYPE_DB = 'db';
 

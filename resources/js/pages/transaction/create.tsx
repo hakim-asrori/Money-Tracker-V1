@@ -21,17 +21,19 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
+import { showToast } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import transaction from '@/routes/transaction';
 import {
     BreadcrumbItem,
     CategoryInterface,
+    SharedData,
     User,
     WalletInterface,
 } from '@/types';
-import { Form, Head, Link } from '@inertiajs/react';
+import { Form, Head, Link, usePage } from '@inertiajs/react';
 import { ChevronLeftIcon, PlusIcon, XIcon } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -57,6 +59,14 @@ export default function CreateTransaction({
     categories: CategoryInterface[];
     users: User[];
 }) {
+    const page = usePage().props as any as SharedData;
+
+    useEffect(() => {
+        if (page.flash.error || page.flash.warning) {
+            showToast(page.flash);
+        }
+    }, [page.flash]);
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="New Transaction" />

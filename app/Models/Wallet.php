@@ -4,8 +4,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 
 /**
  * @property int $id
@@ -40,16 +39,16 @@ class Wallet extends Model
 
     public function category()
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsTo(Category::class)->withTrashed();
     }
 
     public function mutation()
     {
-        return $this->morphOne(Mutation::class, 'mutable');
+        return $this->morphOne(Mutation::class, 'mutable')->withTrashed();
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 }

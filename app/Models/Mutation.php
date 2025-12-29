@@ -33,11 +33,11 @@ class Mutation extends Model
 
     public function mutable()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withTrashed();
     }
 
     public function wallet()
     {
-        return $this->belongsTo(Wallet::class);
+        return $this->belongsTo(Wallet::class)->withTrashed();
     }
 }

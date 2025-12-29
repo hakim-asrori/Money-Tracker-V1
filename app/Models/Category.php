@@ -4,12 +4,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 use App\Enums\CategoryTypeConstant;
 use App\Models\Scopes\UserScope;
 use App\Observers\UserObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model;
 
 #[ObservedBy([UserObserver::class])]
 class Category extends Model
@@ -44,16 +43,16 @@ class Category extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function wallets()
     {
-        return $this->hasMany(Wallet::class);
+        return $this->hasMany(Wallet::class)->withTrashed();
     }
 
     public function transactions()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class)->withTrashed();
     }
 }

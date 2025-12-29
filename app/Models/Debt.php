@@ -4,8 +4,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
 
 /**
  * @property int $id
@@ -52,31 +51,31 @@ class Debt extends Model
 
     public function wallet()
     {
-        return $this->belongsTo(Wallet::class);
+        return $this->belongsTo(Wallet::class)->withTrashed();
     }
 
     public function mutation()
     {
-        return $this->morphOne(Mutation::class, 'mutable');
+        return $this->morphOne(Mutation::class, 'mutable')->withTrashed();
     }
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function transaction()
     {
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(Transaction::class)->withTrashed();
     }
 
     public function target()
     {
-        return $this->hasOne(DebtTarget::class);
+        return $this->hasOne(DebtTarget::class)->withTrashed();
     }
 
     public function targets()
     {
-        return $this->hasMany(DebtTarget::class);
+        return $this->hasMany(DebtTarget::class)->withTrashed();
     }
 }

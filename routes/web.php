@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{CategoryController, IncomeController, InvestmanController, MutationController, TransactionController, WalletController, WalletTransferController};
+use App\Http\Controllers\{CategoryController, DashboardController, IncomeController, InvestmanController, MutationController, TransactionController, WalletController, WalletTransferController};
 use App\Http\Controllers\Debt\{IndebtednesController, ReceivableController};
 use Inertia\Inertia;
 
@@ -13,9 +13,7 @@ Route::get('/privacy', function () {
 })->name('privacy');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {

@@ -2,19 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CategoryTypeConstant;
-use App\Models\Category;
-use App\Models\Debt;
-use App\Models\DebtTarget;
-use App\Models\Mutation;
-use App\Models\Transaction;
-use App\Models\Wallet;
-use App\Services\WalletService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
 use Illuminate\Validation\Rule;
+use App\Enums\CategoryTypeConstant;
+use App\Models\{Category, Debt, DebtTarget, Mutation, Transaction, Wallet};
+use App\Services\WalletService;
 use Inertia\Inertia;
 
 class TransactionController extends Controller

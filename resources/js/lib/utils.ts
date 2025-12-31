@@ -34,3 +34,10 @@ export const getModelNamePretty = (type: string) => {
     const rawName = type.split('\\').pop(); // WalletTransfer
     return rawName?.replace(/([a-z])([A-Z])/g, '$1 $2'); // Wallet Transfer
 };
+
+export const limitString = (str: string, limit: number = 20) => {
+    if (str.length > limit) {
+        return str.substring(0, limit) + '...';
+    }
+    return str;
+};

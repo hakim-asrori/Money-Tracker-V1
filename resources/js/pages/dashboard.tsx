@@ -41,6 +41,7 @@ export default function Dashboard({
         totalTransactions: number;
         totalTransfers: number;
         totalDebts: number;
+        totalBalance: number;
     };
 }) {
     const chartConfig = {
@@ -60,6 +61,18 @@ export default function Dashboard({
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
+            <div className="max-w-sm">
+                <Card>
+                    <CardHeader>
+                        <CardDescription>Total Balance</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <CardTitle className="text-2xl">
+                            Rp {formatNumber(summaries.totalBalance)}
+                        </CardTitle>
+                    </CardContent>
+                </Card>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 [&_[data-slot=card-title]]:line-clamp-1 [&_[data-slot=card-title]]:text-2xl">
                 <Card>
                     <CardHeader>

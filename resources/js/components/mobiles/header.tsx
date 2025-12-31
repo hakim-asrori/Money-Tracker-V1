@@ -29,13 +29,15 @@ export function HeaderSection({
     children?: React.ReactNode;
 }) {
     return (
-        <div className={cn(className)}>
-            <div className={cn('grid grid-cols-3 items-center gap-3')}>
-                <Link href={path} className="font-bold">
-                    <ChevronLeftIcon />
-                </Link>
-                <h1 className="text-center font-semibold">{title}</h1>
-                {rightNode}
+        <div className={cn(className, 'mb-10')}>
+            <div className="fixed top-0 z-50 w-screen bg-white">
+                <div className={cn('grid grid-cols-3 items-center gap-3 p-4')}>
+                    <Link href={path} className="font-bold">
+                        <ChevronLeftIcon />
+                    </Link>
+                    <h1 className="text-center font-semibold">{title}</h1>
+                    {rightNode}
+                </div>
             </div>
             {children}
         </div>

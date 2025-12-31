@@ -75,6 +75,8 @@ export interface WalletInterface extends CommonColumn {
     name: string;
     balance: number;
     category: CategoryInterface;
+    muatation: MutationInterface;
+    mutations: MutationInterface[];
 }
 
 export interface WalletTransferInterface extends CommonColumn {

@@ -1,4 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
+import { cn } from '@/lib/utils';
 
 export default function AppMobileDetailLayout({
     children,
@@ -9,7 +10,7 @@ export default function AppMobileDetailLayout({
 }) {
     return (
         <div>
-            <div className={className}>{children}</div>
+            <div className={cn(className, 'pb-10')}>{children}</div>
             <Toaster position="top-right" />
         </div>
     );

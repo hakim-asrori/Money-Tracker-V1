@@ -4,6 +4,8 @@ import { AppSidebar } from '@/components/app-sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import { dashboard } from '@/routes';
 import mutation from '@/routes/mutation';
+import transaction from '@/routes/transaction';
+import wallet from '@/routes/wallet';
 import { Link } from '@inertiajs/react';
 import {
     ArrowRightLeftIcon,
@@ -46,13 +48,13 @@ export default function AppMobileLayout({
                                 <HistoryIcon size={20} />
                             </Link>
                             <Link
-                                href={mutation.index()}
+                                href={transaction.index()}
                                 className="rounded-full p-2"
                             >
                                 <ArrowRightLeftIcon size={20} />
                             </Link>
                             <Link
-                                href={mutation.index()}
+                                href={wallet.index()}
                                 className="rounded-full p-2"
                             >
                                 <WalletIcon size={20} />

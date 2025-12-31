@@ -6,14 +6,16 @@ use App\Models\Mutation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Jenssegers\Agent\Agent;
 
 class MutationController extends Controller
 {
-    protected $user;
+    protected $user, $agent;
 
     public function __construct(protected Mutation $mutation)
     {
         $this->user = Auth::user();
+        $this->agent = new Agent();
     }
 
     public function index(Request $request)
@@ -39,6 +41,12 @@ class MutationController extends Controller
         $mutationQuery->with(['wallet', 'mutable']);
         $mutationQuery->orderByDesc('created_at')->orderByDesc('id');
         $mutations = $mutationQuery->paginate($request->get('perPage', 10));
+        if ($this->agent->isMobile()) {
+            return Inertia::render('mobile/mutation/index', [
+                'mutations' => $mutations,
+                'filters' => $request->only('wallet', 'type', 'inquiry', 'publishedAt', 'page', 'perPage'),
+            ]);
+        }
 
         $inquiryGroups = $mutationQueryClone->get()->groupBy(fn($m) => $m->mutable_type);
         $inquiryGroups = $inquiryGroups->keys()->map(fn($key) => class_basename($key))->toArray();

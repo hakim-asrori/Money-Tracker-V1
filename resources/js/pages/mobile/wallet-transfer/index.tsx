@@ -12,7 +12,7 @@ import {
     WalletInterface,
     WalletTransferInterface,
 } from '@/types';
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, useForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import {
@@ -41,17 +41,32 @@ import { useEffect, useState } from 'react';
 export default function WalletTransfers({
     wallets,
     walletTransfers,
+    filters,
 }: {
     wallets: WalletInterface[];
     walletTransfers: MetaPagination<WalletTransferInterface>;
+    filters: any;
 }) {
     const page = usePage().props as any as SharedData;
+    const { data, setData, get } = useForm<{
+        perPage: number;
+        page: number;
+    }>({
+        perPage: filters.perPage || 15,
+        page: filters.page || 1,
+    });
 
     const [searchWallet, setSearchWallet] = useState('');
 
     useEffect(() => {
         showToast(page.flash);
     }, [page.flash]);
+
+    useEffect(() => {
+        get(walletTransferRoute.index().url, {
+            preserveState: true,
+        });
+    }, [data]);
 
     return (
         <AppMobileDetailLayout className="relative space-y-4">

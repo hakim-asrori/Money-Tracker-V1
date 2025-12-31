@@ -120,7 +120,7 @@ class WalletController extends Controller
             return to_route('wallet.index')->with('warning', 'Wallet not found');
         }
 
-        $mutations = $this->mutation->where('wallet_id', $wallet->id)->paginate($request->get('perPage', 10));
+        $mutations = $this->mutation->where('wallet_id', $wallet->id)->orderByDesc('created_at')->paginate($request->get('perPage', 10));
         $categories = $this->category
             ->where('user_id', $this->user->id)
             ->where('type', CategoryTypeConstant::WALLET->value)

@@ -45,6 +45,7 @@ class WalletTransferController extends Controller
             return Inertia::render('mobile/wallet-transfer/index', [
                 'wallets' => $wallets,
                 'walletTransfers' => $walletTransfers,
+                'filters' => $request->only('origin', 'target', 'publishedAt', 'perPage', 'page'),
             ]);
         }
 
@@ -122,7 +123,9 @@ class WalletTransferController extends Controller
             ]);
 
             WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->amount, Mutation::TYPE_DB);
-            WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->fee, Mutation::TYPE_DB);
+            if ($request->fee > 0) {
+                WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->fee, Mutation::TYPE_DB);
+            }
 
             WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletTarget->id, $request->amount, Mutation::TYPE_CR);
 

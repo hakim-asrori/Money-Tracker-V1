@@ -30,6 +30,7 @@ import { Spinner } from '@/components/ui/spinner';
 import AppMobileDetailLayout from '@/layouts/app/app-mobile-detail-layout';
 import { cn, formatNumber, limitString, showToast } from '@/lib/utils';
 import walletRouter from '@/routes/wallet';
+import walletTransfer from '@/routes/wallet-transfer';
 import {
     CategoryInterface,
     MetaPagination,
@@ -37,9 +38,14 @@ import {
     SharedData,
     WalletInterface,
 } from '@/types';
-import { Form, Head, usePage } from '@inertiajs/react';
+import { Form, Head, router, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { ArrowDownIcon, ArrowUpIcon, EditIcon } from 'lucide-react';
+import {
+    ArrowDownIcon,
+    ArrowRightLeftIcon,
+    ArrowUpIcon,
+    EditIcon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Wallet({
@@ -76,17 +82,31 @@ export default function Wallet({
                 title="Detail Wallet"
                 path={walletRouter.index().url}
                 rightNode={
-                    <div
-                        className="flex justify-end"
-                        onClick={() =>
-                            setShowDialog({
-                                ...showDialog,
-                                show: true,
-                                title: 'Edit Wallet',
-                            })
-                        }
-                    >
-                        <EditIcon size={20} />
+                    <div className="flex justify-end gap-3">
+                        <div
+                            onClick={() =>
+                                router.visit(
+                                    walletTransfer.create({
+                                        mergeQuery: {
+                                            origin: wallet.id,
+                                        },
+                                    }),
+                                )
+                            }
+                        >
+                            <ArrowRightLeftIcon size={20} />
+                        </div>
+                        <div
+                            onClick={() =>
+                                setShowDialog({
+                                    ...showDialog,
+                                    show: true,
+                                    title: 'Edit Wallet',
+                                })
+                            }
+                        >
+                            <EditIcon size={20} />
+                        </div>
                     </div>
                 }
             >

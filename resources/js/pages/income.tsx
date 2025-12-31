@@ -2,6 +2,7 @@ import { columns } from '@/components/columns/income.column';
 import { DataTable } from '@/components/data-table';
 import { DeleteConfirm } from '@/components/delete-confirm';
 import Heading from '@/components/heading';
+import Pagination from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -38,7 +39,7 @@ import {
     SharedData,
     WalletInterface,
 } from '@/types';
-import { Form, Head, usePage } from '@inertiajs/react';
+import { Form, Head, useForm, usePage } from '@inertiajs/react';
 import { PlusCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -57,11 +58,24 @@ export default function Income({
     categories,
     wallets,
     incomes,
+    filters,
 }: {
     categories: CategoryInterface[];
     wallets: WalletInterface[];
     incomes: MetaPagination<IncomeInterface>;
+    filters: any;
 }) {
+    const { data, setData, get } = useForm<{
+        search: string;
+        type: string;
+        page: number;
+        perPage: number;
+    }>({
+        search: filters.search || '',
+        type: filters.type || '-1',
+        page: filters.page || 1,
+        perPage: filters.perPage || 10,
+    });
     const page = usePage().props as any as SharedData;
     const [showDialog, setShowDialog] = useState<{
         title: string;
@@ -75,6 +89,12 @@ export default function Income({
     const [incomeSelected, setIncomeSelected] = useState<IncomeInterface>();
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
 
+    const handleFilter = () => {
+        get(income.index().url, {
+            preserveState: true,
+        });
+    };
+
     useEffect(() => {
         if (page.flash.success) {
             setShowDialog({
@@ -85,6 +105,10 @@ export default function Income({
         }
         showToast(page.flash);
     }, [page.flash]);
+
+    useEffect(() => {
+        handleFilter();
+    }, [data]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -120,6 +144,18 @@ export default function Income({
                 })}
                 data={incomes.data}
             />
+            {incomes.data.length > 0 && (
+                <Pagination
+                    pagination={incomes}
+                    showRowsPerPage
+                    changePage={(e) => {
+                        setData('page', e);
+                    }}
+                    changePerPage={(e) => {
+                        setData('perPage', e);
+                    }}
+                />
+            )}
 
             <Dialog
                 open={showDialog.show}

@@ -38,9 +38,8 @@ class WalletTransferController extends Controller
             $query->whereDate('published_at', $request->get('publishedAt'));
         });
 
-        $walletTransferQuery->orderBy('published_at', 'desc');
-
-        $walletTransfers = $walletTransferQuery->with(['walletOrigin', 'walletTarget'])->paginate();
+        $walletTransferQuery->orderByDesc('published_at');
+        $walletTransfers = $walletTransferQuery->with(['walletOrigin', 'walletTarget'])->paginate($request->get('perPage', 10));
 
         if ($this->agent->isMobile()) {
             return Inertia::render('mobile/wallet-transfer/index', [
@@ -51,7 +50,7 @@ class WalletTransferController extends Controller
 
         return Inertia::render('wallet-transfer', [
             'wallets' => $wallets,
-            'filters' => $request->only('origin', 'target', 'publishedAt'),
+            'filters' => $request->only('origin', 'target', 'publishedAt', 'perPage', 'page'),
             'walletTransfers' => $walletTransfers,
         ]);
     }

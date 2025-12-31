@@ -57,7 +57,7 @@ class MutationController extends Controller
             'mutations' => $mutations,
             'inquiryGroups' => $inquiryGroups,
             'walletGroups' => $walletGroups,
-            'filters' => $request->only('wallet', 'type', 'inquiry', 'publishedAt'),
+            'filters' => $request->only('wallet', 'type', 'inquiry', 'publishedAt', 'page', 'perPage'),
         ]);
     }
 }

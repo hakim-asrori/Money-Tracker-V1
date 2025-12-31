@@ -1,6 +1,7 @@
 import { columns } from '@/components/columns/wallet-transfer.column';
 import { DataTable } from '@/components/data-table';
 import Heading from '@/components/heading';
+import Pagination from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -65,10 +66,14 @@ export default function WalletTransfers({
         origin: string;
         target: string;
         publishedAt: string;
+        perPage: number;
+        page: number;
     }>({
         origin: filters.origin || '',
         target: filters.target || '',
         publishedAt: filters.publishedAt || '',
+        perPage: filters.perPage || 10,
+        page: filters.page || 1,
     });
     const page = usePage().props as any as SharedData;
     const [showDialog, setShowDialog] = useState<{
@@ -185,6 +190,18 @@ export default function WalletTransfers({
             </div>
 
             <DataTable columns={columns({})} data={walletTransfers.data} />
+            {walletTransfers.data.length > 0 && (
+                <Pagination
+                    pagination={walletTransfers}
+                    showRowsPerPage
+                    changePage={(e) => {
+                        setData('page', e);
+                    }}
+                    changePerPage={(e) => {
+                        setData('perPage', e);
+                    }}
+                />
+            )}
 
             <Dialog
                 open={showDialog.show}

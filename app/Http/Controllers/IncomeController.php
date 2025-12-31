@@ -2,17 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CategoryTypeConstant;
-use App\Models\Category;
-use App\Models\Income;
-use App\Models\Mutation;
-use App\Models\Wallet;
-use App\Services\WalletService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
 use Illuminate\Validation\Rule;
+use App\Enums\CategoryTypeConstant;
+use App\Models\{Category, Income, Mutation, Wallet};
+use App\Services\WalletService;
 use Inertia\Inertia;
 
 class IncomeController extends Controller
@@ -34,12 +29,23 @@ class IncomeController extends Controller
 
         $incomeQuery = $this->income->query();
         $incomeQuery->where('user_id', $this->user->id);
-        $incomes = $incomeQuery->with(['category', 'wallet'])->paginate();
+        $incomeQuery->when($request->has('category') && $request->get('category') != '-1' && $request->filled('category'), function ($query) use ($request) {
+            $query->where('category_id', $request->get('category'));
+        });
+        $incomeQuery->when($request->has('wallet') && $request->get('wallet') != '-1' && $request->filled('wallet'), function ($query) use ($request) {
+            $query->where('wallet_id', $request->get('wallet'));
+        });
+        $incomeQuery->when($request->has('search') && $request->filled('search'), function ($query) use ($request) {
+            $query->where('title', 'like', "%{$request->search}%");
+        });
+        $incomeQuery->orderByDesc('published_at');
+        $incomes = $incomeQuery->with(['category', 'wallet'])->paginate($request->get('perPage', 10));
 
         return Inertia::render('income', [
             'categories' => $categories,
             'wallets' => $wallets,
-            'incomes' => $incomes
+            'incomes' => $incomes,
+            'filters' => $request->all('search', 'perPage', 'page', 'category', 'wallet'),
         ]);
     }
 

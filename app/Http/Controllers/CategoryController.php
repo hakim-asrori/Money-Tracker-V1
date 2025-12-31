@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB};
 use App\Enums\CategoryTypeConstant;
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -31,6 +30,7 @@ class CategoryController extends Controller
             $query->where('name', 'like', '%' . $request->get('search') . '%');
         });
         $queryCategory->where('user_id', $this->user->id);
+        $queryCategory->orderBy('type', 'asc');
         $categories = $queryCategory->paginate($request->get('perPage', 10));
         $categories->getCollection()->transform(function ($category) {
             $category->type_desc = CategoryTypeConstant::getMessage($category->type);
@@ -41,7 +41,7 @@ class CategoryController extends Controller
         return Inertia::render('category', [
             'categoryTypes' => $categoryTypes,
             'categories' => $categories,
-            'filters' => $request->only('search', 'type')
+            'filters' => $request->only('search', 'type', 'perPage', 'page'),
         ]);
     }
 

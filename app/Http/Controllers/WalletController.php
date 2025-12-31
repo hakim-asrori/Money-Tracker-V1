@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CategoryTypeConstant;
-use App\Models\Category;
-use App\Models\Mutation;
-use App\Models\Wallet;
-use App\Services\WalletService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{Auth, DB};
 use Illuminate\Validation\Rule;
+use App\Enums\CategoryTypeConstant;
+use App\Models\{Category, Mutation, Wallet};
+use App\Services\WalletService;
 use Inertia\Inertia;
 
 class WalletController extends Controller
@@ -37,13 +34,14 @@ class WalletController extends Controller
             $query->where('name', 'like', "%{$request->search}%");
         });
         $walletQuery->where('user_id', $this->user->id);
+        $walletQuery->orderBy('balance', 'desc');
         $walletQuery->with('category');
-        $wallets = $walletQuery->paginate();
+        $wallets = $walletQuery->paginate($request->get('perPage', 10));
 
         return Inertia::render('wallet', [
             'wallets' => $wallets,
             'categories' => $categories,
-            'filters' => $request->only('search', 'type'),
+            'filters' => $request->only('search', 'type', 'page', 'perPage'),
         ]);
     }
 

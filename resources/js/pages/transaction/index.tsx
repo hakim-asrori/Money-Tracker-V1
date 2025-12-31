@@ -2,6 +2,7 @@ import { columns } from '@/components/columns/transaction.column';
 import { DataTable } from '@/components/data-table';
 import { DeleteConfirm } from '@/components/delete-confirm';
 import Heading from '@/components/heading';
+import Pagination from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -33,7 +34,7 @@ import {
     TransactionInterface,
     WalletInterface,
 } from '@/types';
-import { Form, Head, Link, usePage } from '@inertiajs/react';
+import { Form, Head, Link, useForm, usePage } from '@inertiajs/react';
 import { PlusCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -53,12 +54,25 @@ export default function Transaction({
     categories,
     wallets,
     transaction,
+    filters,
 }: {
     transactions: MetaPagination<TransactionInterface>;
     categories: CategoryInterface[];
     wallets: WalletInterface[];
     transaction?: TransactionInterface;
+    filters: any;
 }) {
+    const { data, setData, get } = useForm<{
+        search: string;
+        type: string;
+        page: number;
+        perPage: number;
+    }>({
+        search: filters.search || '',
+        type: filters.type || '-1',
+        page: filters.page || 1,
+        perPage: filters.perPage || 10,
+    });
     const page = usePage().props as any as SharedData;
     const [showDialog, setShowDialog] = useState<{
         title: string;
@@ -74,6 +88,11 @@ export default function Transaction({
             transaction || ({} as TransactionInterface),
         );
     const [showConfirm, setShowConfirm] = useState<boolean>(false);
+    const handleFilter = () => {
+        get(transactionRoute.index().url, {
+            preserveState: true,
+        });
+    };
 
     useEffect(() => {
         if (page.flash.success) {
@@ -85,6 +104,10 @@ export default function Transaction({
         }
         showToast(page.flash);
     }, [page.flash]);
+
+    useEffect(() => {
+        handleFilter();
+    }, [data]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -114,6 +137,18 @@ export default function Transaction({
                     },
                 })}
             />
+            {transactions.data.length > 0 && (
+                <Pagination
+                    pagination={transactions}
+                    showRowsPerPage
+                    changePage={(e) => {
+                        setData('page', e);
+                    }}
+                    changePerPage={(e) => {
+                        setData('perPage', e);
+                    }}
+                />
+            )}
 
             <Dialog
                 open={showDialog.show}

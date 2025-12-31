@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mutation;
-use App\Models\Wallet;
-use App\Models\WalletTransfer;
-use App\Services\WalletService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\{Auth, DB};
 use Illuminate\Validation\Rule;
+use App\Models\{Mutation, Wallet, WalletTransfer};
+use App\Services\WalletService;
 use Inertia\Inertia;
 
 class WalletTransferController extends Controller
@@ -39,11 +36,12 @@ class WalletTransferController extends Controller
             $query->whereDate('published_at', $request->get('publishedAt'));
         });
 
-        $walletTransfers = $walletTransferQuery->with(['walletOrigin', 'walletTarget'])->paginate();
+        $walletTransferQuery->orderByDesc('published_at');
+        $walletTransfers = $walletTransferQuery->with(['walletOrigin', 'walletTarget'])->paginate($request->get('perPage', 10));
 
         return Inertia::render('wallet-transfer', [
             'wallets' => $wallets,
-            'filters' => $request->only('origin', 'target', 'publishedAt'),
+            'filters' => $request->only('origin', 'target', 'publishedAt', 'perPage', 'page'),
             'walletTransfers' => $walletTransfers,
         ]);
     }

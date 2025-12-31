@@ -1,6 +1,7 @@
 import { columns } from '@/components/columns/mutation.column';
 import { DataTable } from '@/components/data-table';
 import Heading from '@/components/heading';
+import Pagination from '@/components/pagination';
 import {
     Select,
     SelectContent,
@@ -43,11 +44,15 @@ export default function Mutation({
         type: string;
         wallet: string;
         inquiry: string;
+        page: number;
+        perPage: number;
     }>({
         search: filters.search || '',
         type: filters.type || '-1',
         wallet: filters.wallet || '-1',
         inquiry: filters.inquiry || '-1',
+        page: filters.page || 1,
+        perPage: filters.perPage || 10,
     });
 
     const handleFilter = () => {
@@ -126,6 +131,18 @@ export default function Mutation({
             </div>
 
             <DataTable columns={columns({})} data={mutations.data} />
+            {mutations.data.length > 0 && (
+                <Pagination
+                    pagination={mutations}
+                    showRowsPerPage
+                    changePage={(e) => {
+                        setData('page', e);
+                    }}
+                    changePerPage={(e) => {
+                        setData('perPage', e);
+                    }}
+                />
+            )}
         </AppLayout>
     );
 }

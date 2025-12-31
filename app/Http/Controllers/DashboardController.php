@@ -10,19 +10,21 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $user = $request->user();
         $mutationChart = Mutation::selectRaw('
             date(created_at) as date,
             SUM(CASE WHEN type = "db" THEN amount ELSE 0 END) as total_db,
             SUM(CASE WHEN type = "cr" THEN amount ELSE 0 END) as total_cr
         ')
+            ->where('user_id', $user->id)
             ->orderBy('date', 'asc')
             ->groupBy('date')
             ->get();
 
-        $totalIncomes = Income::sum('amount');
-        $totalTransactions = Transaction::sum('amount');
-        $totalTransfers = WalletTransfer::sum('amount');
-        $totalDebts = Debt::sum('amount');
+        $totalIncomes = Income::where('user_id', $user->id)->sum('amount');
+        $totalTransactions = Transaction::where('user_id', $user->id)->sum('amount');
+        $totalTransfers = WalletTransfer::where('user_id', $user->id)->sum('amount');
+        $totalDebts = Debt::where('user_id', $user->id)->sum('amount');
 
         return Inertia::render('dashboard', [
             'mutationChart' => $mutationChart,

@@ -29,7 +29,8 @@ class TransactionController extends Controller
 
         $transactionQuery = $this->transaction->query();
         $transactionQuery->where('user_id', $this->user->id);
-        $transactions = $transactionQuery->with(['category', 'wallet', 'debt'])->paginate();
+        $transactionQuery->orderByDesc('published_at');
+        $transactions = $transactionQuery->with(['category', 'wallet', 'debt'])->paginate($request->get('perPage', 10));
 
         $transaction = null;
         if ($request->has('edit') && $request->filled('edit')) {
@@ -40,7 +41,8 @@ class TransactionController extends Controller
             'categories' => $categories,
             'wallets' => $wallets,
             'transactions' => $transactions,
-            'transaction' => $transaction
+            'transaction' => $transaction,
+            'filters' => $request->all('search', 'perPage', 'page', 'category', 'wallet')
         ]);
     }
 

@@ -2,6 +2,7 @@ import { columns } from '@/components/columns/category.column';
 import { DataTable } from '@/components/data-table';
 import { DeleteConfirm } from '@/components/delete-confirm';
 import Heading from '@/components/heading';
+import Pagination from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -66,9 +67,13 @@ export default function Category({
     const { data, setData, get } = useForm<{
         search: string;
         type: string;
+        page: number;
+        perPage: number;
     }>({
         search: filters.search || '',
         type: filters.type || '-1',
+        page: filters.page || 1,
+        perPage: filters.perPage || 10,
     });
 
     const page = usePage().props as any as SharedData;
@@ -172,6 +177,18 @@ export default function Category({
                     },
                 })}
             />
+            {categories.data.length > 0 && (
+                <Pagination
+                    pagination={categories}
+                    showRowsPerPage
+                    changePage={(e) => {
+                        setData('page', e);
+                    }}
+                    changePerPage={(e) => {
+                        setData('perPage', e);
+                    }}
+                />
+            )}
 
             <Dialog
                 open={showDialog.show}

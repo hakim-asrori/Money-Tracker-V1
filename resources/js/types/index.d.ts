@@ -36,14 +36,17 @@ export interface SharedData {
     [key: string]: unknown;
 }
 
-export interface MetaPagination<T> {
+export interface MetaPaginationWithoutData {
     current_page: number;
-    data: T[];
     from: number;
     last_page: number;
     per_page: number;
     to: number;
     total: number;
+}
+
+export interface MetaPagination<T> extends MetaPaginationWithoutData {
+    data: T[];
 }
 
 export interface CommonColumn {

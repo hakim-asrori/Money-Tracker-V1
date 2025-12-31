@@ -12,7 +12,7 @@ import {
     WalletInterface,
     WalletTransferInterface,
 } from '@/types';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
 import {
@@ -56,19 +56,8 @@ export default function WalletTransfers({
     return (
         <AppMobileDetailLayout className="relative space-y-4">
             <Head title="Transfer" />
-            <HeaderSection
-                title="Transfer"
-                path={dashboard().url}
-                className="space-y-5 bg-lsecondary px-4 py-3"
-            >
-                <InputGroup className="bg-white">
-                    <InputGroupInput placeholder="Search..." />
-                    <InputGroupAddon>
-                        <SearchIcon />
-                    </InputGroupAddon>
-                </InputGroup>
-            </HeaderSection>
-            <div className="px-4">
+            <HeaderSection title="Transfer" path={dashboard().url} />
+            <div className="px-4 pt-5">
                 <h1 className="mb-3 text-lg font-bold">Histories</h1>
                 <div className="space-y-5">
                     {walletTransfers.data.length < 1 ? (
@@ -91,7 +80,7 @@ export default function WalletTransfers({
                                 key={index}
                             >
                                 <div className="flex items-center gap-3">
-                                    <div className="rounded-full bg-lsecondary p-1.5">
+                                    <div className="rounded-full bg-secondary p-1.5">
                                         <HistoryIcon size={20} />
                                     </div>
                                     <div className="space-y-1">
@@ -122,7 +111,11 @@ export default function WalletTransfers({
                                     </div>
                                 </div>
                                 <h1 className="font-bold">
-                                    Rp {formatNumber(walletTransfer.amount)}
+                                    Rp{' '}
+                                    {formatNumber(
+                                        walletTransfer.amount +
+                                            walletTransfer.fee,
+                                    )}
                                 </h1>
                             </Link>
                         ))
@@ -135,10 +128,7 @@ export default function WalletTransfers({
                     <CardContent>
                         <Drawer>
                             <DrawerTrigger asChild>
-                                <Button
-                                    className="w-full"
-                                    variant={'lsecondary'}
-                                >
+                                <Button className="w-full" variant={'lprimary'}>
                                     Transfer Balance <ArrowRightLeftIcon />
                                 </Button>
                             </DrawerTrigger>
@@ -176,7 +166,7 @@ export default function WalletTransfers({
                                                     key={index}
                                                     className="mb-3 flex items-center justify-between gap-3 border-b pb-3"
                                                     onClick={() => {
-                                                        window.location.href =
+                                                        router.visit(
                                                             walletTransferRoute.create(
                                                                 {
                                                                     mergeQuery:
@@ -184,7 +174,8 @@ export default function WalletTransfers({
                                                                             origin: wallet.id,
                                                                         },
                                                                 },
-                                                            ).url;
+                                                            ),
+                                                        );
                                                     }}
                                                 >
                                                     <h1 className="text-sm font-medium">

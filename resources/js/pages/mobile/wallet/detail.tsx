@@ -216,7 +216,10 @@ export default function Wallet({
                                             Cancel
                                         </Button>
                                     </DialogClose>
-                                    <Button disabled={processing}>
+                                    <Button
+                                        disabled={processing}
+                                        variant={'lprimary'}
+                                    >
                                         Save {processing && <Spinner />}
                                     </Button>
                                 </DialogFooter>

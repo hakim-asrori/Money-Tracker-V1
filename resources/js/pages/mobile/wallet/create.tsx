@@ -99,7 +99,10 @@ export default function Wallet({
                                     <FieldError>{errors.balance}</FieldError>
                                 </Field>
                                 <Field>
-                                    <Button disabled={processing}>
+                                    <Button
+                                        disabled={processing}
+                                        variant={'lprimary'}
+                                    >
                                         {processing ? (
                                             <Spinner />
                                         ) : (

@@ -47,11 +47,10 @@ export default function WalletTransferCreate({
                             title="Transfer"
                             path={walletTransfer.index().url}
                             className={cn(
-                                'space-y-5 bg-lsecondary px-4 py-3',
                                 processing && '[&_a]:pointer-events-none',
                             )}
                         />
-                        <Card className="-mt-3 rounded-none border-0">
+                        <Card className="-mt-3 rounded-none border-0 pt-10">
                             <CardHeader>
                                 <CardTitle className="text-sm">
                                     Source of Funding
@@ -120,6 +119,7 @@ export default function WalletTransferCreate({
                                             placeholder="real amount (ex. 100000)"
                                             className="placeholder:text-sm"
                                             disabled={processing}
+                                            defaultValue={0}
                                             onChange={(e) => {
                                                 if (
                                                     isNaN(
@@ -149,6 +149,7 @@ export default function WalletTransferCreate({
                                             placeholder="fee amount (ex. 1000)"
                                             className="placeholder:text-sm"
                                             disabled={processing}
+                                            defaultValue={0}
                                             onChange={(e) => {
                                                 if (
                                                     isNaN(
@@ -189,7 +190,7 @@ export default function WalletTransferCreate({
                         </Card>
                         <div className="px-4">
                             <Button
-                                variant={'lsecondary'}
+                                variant={'lprimary'}
                                 className="w-full"
                                 disabled={processing || amount + fee < 1}
                             >

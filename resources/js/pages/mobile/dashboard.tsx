@@ -75,7 +75,7 @@ export default function Dashboard({
                 </CardHeader>
                 <CardContent className="grid grid-cols-4 items-center justify-center gap-4 px-2">
                     <Link className="flex w-full flex-col items-center gap-0.5">
-                        <div className="rounded-full bg-lsecondary p-2.5">
+                        <div className="rounded-full bg-muted p-2.5">
                             <HandCoinsIcon size={20} />
                         </div>
                         <div>
@@ -83,7 +83,7 @@ export default function Dashboard({
                         </div>
                     </Link>
                     <Link className="flex w-full flex-col items-center gap-0.5">
-                        <div className="rounded-full bg-lsecondary p-2.5">
+                        <div className="rounded-full bg-muted p-2.5">
                             <ShoppingCartIcon size={20} />
                         </div>
                         <div>
@@ -96,7 +96,7 @@ export default function Dashboard({
                         href={walletTransfer.index()}
                         className="flex w-full flex-col items-center gap-0.5"
                     >
-                        <div className="rounded-full bg-lsecondary p-2.5">
+                        <div className="rounded-full bg-muted p-2.5">
                             <ArrowRightLeftIcon size={20} />
                         </div>
                         <div>
@@ -104,7 +104,7 @@ export default function Dashboard({
                         </div>
                     </Link>
                     <Link className="flex w-full flex-col items-center gap-0.5">
-                        <div className="rounded-full bg-lsecondary p-2.5">
+                        <div className="rounded-full bg-muted p-2.5">
                             <UploadCloudIcon size={20} />
                         </div>
                         <div>
@@ -115,7 +115,7 @@ export default function Dashboard({
             </Card>
 
             <h1 className="text-xl font-bold">Summaries</h1>
-            <div className="grid grid-cols-2 gap-4 [&_[data-slot=card-content]]:space-y-1 [&_[data-slot=card-title]]:text-lprimary [&_svg]:text-lime-800">
+            <div className="grid grid-cols-2 gap-4 [&_[data-slot=card-content]]:space-y-1 [&_[data-slot=card-title]]:text-lprimary [&_svg]:text-lprimary">
                 <Card>
                     <CardHeader className="font-bold">
                         <TrendingUpDownIcon size={30} />

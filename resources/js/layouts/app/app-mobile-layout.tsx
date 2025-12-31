@@ -8,9 +8,9 @@ import transaction from '@/routes/transaction';
 import wallet from '@/routes/wallet';
 import { Link } from '@inertiajs/react';
 import {
-    ArrowRightLeftIcon,
     HistoryIcon,
     HomeIcon,
+    ShoppingCartIcon,
     UserIcon,
     WalletIcon,
 } from 'lucide-react';
@@ -51,7 +51,7 @@ export default function AppMobileLayout({
                                 href={transaction.index()}
                                 className="rounded-full p-2"
                             >
-                                <ArrowRightLeftIcon size={20} />
+                                <ShoppingCartIcon size={20} />
                             </Link>
                             <Link
                                 href={wallet.index()}

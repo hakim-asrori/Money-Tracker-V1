@@ -9,6 +9,7 @@ import {
 import AppMobileLayout from '@/layouts/app/app-mobile-layout';
 import { formatNumber } from '@/lib/utils';
 import { dashboard } from '@/routes';
+import income from '@/routes/income';
 import walletTransfer from '@/routes/wallet-transfer';
 import { SharedData, type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
@@ -74,7 +75,10 @@ export default function Dashboard({
                     </Card>
                 </CardHeader>
                 <CardContent className="grid grid-cols-4 items-center justify-center gap-4 px-2">
-                    <Link className="flex w-full flex-col items-center gap-0.5">
+                    <Link
+                        href={income.index()}
+                        className="flex w-full flex-col items-center gap-0.5"
+                    >
                         <div className="rounded-full bg-muted p-2.5">
                             <HandCoinsIcon size={20} />
                         </div>

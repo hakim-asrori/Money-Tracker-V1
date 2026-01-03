@@ -68,6 +68,10 @@ class WalletTransferController extends Controller
         }
 
         $walletOrigin = $this->wallet->whereUserId($this->user->id)->find($request->get('origin'));
+        if (!$walletOrigin) {
+            return to_route('wallet-transfer.index')->with('warning', 'Wallet origin not found');
+        }
+
         $wallets = $this->wallet->where('user_id', $this->user->id)->where('id', '!=', $walletOrigin->id)->get();
 
         return Inertia::render('mobile/wallet-transfer/create', [

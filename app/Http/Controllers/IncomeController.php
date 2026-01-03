@@ -9,14 +9,16 @@ use App\Enums\CategoryTypeConstant;
 use App\Models\{Category, Income, Mutation, Wallet};
 use App\Services\WalletService;
 use Inertia\Inertia;
+use Jenssegers\Agent\Agent;
 
 class IncomeController extends Controller
 {
-    protected $user;
+    protected $user, $agent;
 
     public function __construct(protected Category $category, protected Wallet $wallet, protected Income $income)
     {
         $this->user = Auth::user();
+        $this->agent = new Agent();
     }
 
     public function index(Request $request)
@@ -41,6 +43,14 @@ class IncomeController extends Controller
         $incomeQuery->orderByDesc('published_at');
         $incomes = $incomeQuery->with(['category', 'wallet'])->paginate($request->get('perPage', 10));
 
+        if ($this->agent->isMobile()) {
+            return Inertia::render('mobile/income/index', [
+                'incomes' => $incomes,
+                'wallets' => $wallets,
+                'filters' => $request->all('search', 'perPage', 'page', 'category', 'wallet'),
+            ]);
+        }
+
         return Inertia::render('income', [
             'categories' => $categories,
             'wallets' => $wallets,
@@ -50,9 +60,30 @@ class IncomeController extends Controller
     }
 
 
-    public function create()
+    public function create(Request $request)
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return redirect()->route('income.index');
+        }
+
+        if (!$request->has('wallet')) {
+            return to_route('income.index')->with('warning', 'Please select wallet');
+        }
+
+        $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
+        if (!$wallet) {
+            return to_route('income.index')->with('warning', 'Wallet not found');
+        }
+
+        $categories = $this->category
+            ->where('user_id', $this->user->id)
+            ->where('type', CategoryTypeConstant::INCOME->value)
+            ->get();
+
+        return Inertia::render('mobile/income/create', [
+            'categories' => $categories,
+            'wallet' => $wallet,
+        ]);
     }
 
 

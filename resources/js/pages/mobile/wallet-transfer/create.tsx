@@ -20,6 +20,7 @@ import { cn, formatNumber } from '@/lib/utils';
 import walletTransfer from '@/routes/wallet-transfer';
 import { WalletInterface } from '@/types';
 import { Form, Head } from '@inertiajs/react';
+import { format } from 'date-fns';
 import { useState } from 'react';
 
 export default function WalletTransferCreate({
@@ -64,7 +65,7 @@ export default function WalletTransferCreate({
                                         </AvatarFallback>
                                     </Avatar>
                                     <div>
-                                        <h1 className="line-clamp-1 font-bold">
+                                        <h1 className="line-clamp-1 font-bold capitalize">
                                             {walletOrigin.name}
                                         </h1>
                                         <p className="text-sm">
@@ -184,6 +185,7 @@ export default function WalletTransferCreate({
                                     type="datetime-local"
                                     name="published_at"
                                     disabled={processing}
+                                    max={format(new Date(), 'yyyy-MM-dd 23:59')}
                                 />
                                 <InputError message={errors.published_at} />
                             </CardContent>

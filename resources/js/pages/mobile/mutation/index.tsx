@@ -59,7 +59,7 @@ export default function Mutation({
                                       <h1 className="text-sm font-bold">
                                           {limitString(
                                               mutation.description,
-                                              25,
+                                              20,
                                           )}
                                       </h1>
                                       <h1 className="text-xs">
@@ -70,7 +70,7 @@ export default function Mutation({
                                       </h1>
                                   </div>
                               </div>
-                              <h1 className="text-lg font-bold">
+                              <h1 className="line-clamp-1 text-lg font-bold">
                                   Rp {formatNumber(mutation.amount)}
                               </h1>
                           </div>

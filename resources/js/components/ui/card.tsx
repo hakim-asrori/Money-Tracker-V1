@@ -83,7 +83,7 @@ function CardWallet({wallet, className = "bg-lprimary text-white", ...props}: { 
             </div>
             <CardHeader className="z-50">
                 <div className="flex items-center justify-between gap-2">
-                    <CardTitle className="line-clamp-1 text-lg">
+                    <CardTitle className="line-clamp-1 text-lg capitalize">
                         {wallet.name}
                     </CardTitle>
                     <Wallet2Icon />

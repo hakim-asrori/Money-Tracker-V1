@@ -132,7 +132,26 @@ class IncomeController extends Controller
 
     public function edit(string $id)
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return redirect()->route('income.index');
+        }
+
+        $income = $this->income->where('user_id', $this->user->id)->find($id);
+        if (!$income) {
+            return to_route('income.index')->with('warning', 'Income not found');
+        }
+
+        $income->load(['category']);
+
+        $categories = $this->category
+            ->where('user_id', $this->user->id)
+            ->where('type', CategoryTypeConstant::INCOME->value)
+            ->get();
+
+        return Inertia::render('mobile/income/edit', [
+            'income' => $income,
+            'categories' => $categories,
+        ]);
     }
 
 

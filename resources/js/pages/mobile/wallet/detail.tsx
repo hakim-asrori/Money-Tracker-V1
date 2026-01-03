@@ -12,6 +12,14 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog';
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
     Field,
     FieldError,
     FieldGroup,
@@ -28,7 +36,13 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import AppMobileDetailLayout from '@/layouts/app/app-mobile-detail-layout';
-import { cn, formatNumber, limitString, showToast } from '@/lib/utils';
+import {
+    cn,
+    formatNumber,
+    limitString,
+    showToast,
+    swalConfirm,
+} from '@/lib/utils';
 import walletRouter from '@/routes/wallet';
 import walletTransfer from '@/routes/wallet-transfer';
 import {
@@ -45,6 +59,8 @@ import {
     ArrowRightLeftIcon,
     ArrowUpIcon,
     EditIcon,
+    MoreVerticalIcon,
+    Trash2Icon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -63,6 +79,14 @@ export default function Wallet({
         show: false,
         type: 1,
     });
+
+    const handleDelete = async (wallet: WalletInterface) => {
+        const confirmed = await swalConfirm({ placeholder: "entry 'delete'" });
+
+        if (!confirmed) return;
+
+        router.delete(walletRouter.destroy(wallet.id));
+    };
 
     useEffect(() => {
         if (page.flash.success) {
@@ -83,30 +107,46 @@ export default function Wallet({
                 path={walletRouter.index().url}
                 rightNode={
                     <div className="flex justify-end gap-3">
-                        <div
-                            onClick={() =>
-                                router.visit(
-                                    walletTransfer.create({
-                                        mergeQuery: {
-                                            origin: wallet.id,
-                                        },
-                                    }),
-                                )
-                            }
-                        >
-                            <ArrowRightLeftIcon size={20} />
-                        </div>
-                        <div
-                            onClick={() =>
-                                setShowDialog({
-                                    ...showDialog,
-                                    show: true,
-                                    title: 'Edit Wallet',
-                                })
-                            }
-                        >
-                            <EditIcon size={20} />
-                        </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                <MoreVerticalIcon size={20} />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        router.visit(
+                                            walletTransfer.create({
+                                                mergeQuery: {
+                                                    origin: wallet.id,
+                                                },
+                                            }),
+                                        )
+                                    }
+                                >
+                                    <ArrowRightLeftIcon />
+                                    Tranfer
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() =>
+                                        setShowDialog({
+                                            ...showDialog,
+                                            show: true,
+                                            title: 'Edit Wallet',
+                                        })
+                                    }
+                                >
+                                    <EditIcon /> Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    variant="destructive"
+                                    onClick={() => handleDelete(wallet)}
+                                >
+                                    <Trash2Icon /> Delete
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 }
             >

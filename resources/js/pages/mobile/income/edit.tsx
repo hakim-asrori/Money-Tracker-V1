@@ -8,11 +8,6 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-} from '@/components/ui/input-group';
-import {
     Select,
     SelectContent,
     SelectItem,
@@ -23,30 +18,29 @@ import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
 import AppMobileDetailLayout from '@/layouts/app/app-mobile-detail-layout';
 import { cn } from '@/lib/utils';
-import income from '@/routes/income';
-import { CategoryInterface, WalletInterface } from '@/types';
+import incomeRouter from '@/routes/income';
+import { CategoryInterface, IncomeInterface } from '@/types';
 import { Form, Head } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { SaveIcon } from 'lucide-react';
 
-export default function Create({
+export default function Edit({
     categories,
-    wallet,
+    income,
 }: {
     categories: CategoryInterface[];
-    wallet: WalletInterface;
+    income: IncomeInterface;
 }) {
     return (
         <AppMobileDetailLayout className="relative space-y-4">
-            <Head title="Create Income" />
+            <Head title="Edit Income" />
 
-            <Form disableWhileProcessing {...income.store.form()}>
+            <Form disableWhileProcessing {...incomeRouter.update.form(income)}>
                 {({ processing, errors }) => (
                     <>
-                        <input type="hidden" name="wallet" value={wallet.id} />
                         <HeaderSection
-                            title="Create Income"
-                            path={income.index().url}
+                            title="Edit Income"
+                            path={incomeRouter.index().url}
                             className={cn(
                                 processing && '[&_a]:pointer-events-none',
                             )}
@@ -59,7 +53,11 @@ export default function Create({
                                 <FieldLabel htmlFor="category">
                                     Category
                                 </FieldLabel>
-                                <Select name="category" disabled={processing}>
+                                <Select
+                                    name="category"
+                                    disabled={processing}
+                                    defaultValue={income.category.id.toString()}
+                                >
                                     <SelectTrigger className="w-full">
                                         <SelectValue placeholder="" />
                                     </SelectTrigger>
@@ -78,26 +76,19 @@ export default function Create({
                             </Field>
                             <Field>
                                 <FieldLabel>Title</FieldLabel>
-                                <Input name="title" disabled={processing} />
+                                <Input
+                                    name="title"
+                                    disabled={processing}
+                                    defaultValue={income.title}
+                                />
                                 <FieldError>{errors.title}</FieldError>
-                            </Field>
-                            <Field>
-                                <FieldLabel>Amount</FieldLabel>
-                                <InputGroup>
-                                    <InputGroupInput
-                                        name="amount"
-                                        disabled={processing}
-                                        defaultValue={0}
-                                    />
-                                    <InputGroupAddon>Rp</InputGroupAddon>
-                                </InputGroup>
-                                <FieldError>{errors.amount}</FieldError>
                             </Field>
                             <Field>
                                 <FieldLabel>Description</FieldLabel>
                                 <Textarea
                                     name="description"
                                     disabled={processing}
+                                    defaultValue={income.description}
                                 />
                                 <FieldError>{errors.description}</FieldError>
                             </Field>
@@ -107,6 +98,7 @@ export default function Create({
                                     name="published_at"
                                     type="datetime-local"
                                     disabled={processing}
+                                    defaultValue={income.published_at}
                                     max={format(new Date(), 'yyyy-MM-dd 23:59')}
                                 />
                                 <FieldError>{errors.published_at}</FieldError>

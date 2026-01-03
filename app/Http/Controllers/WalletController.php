@@ -184,7 +184,7 @@ class WalletController extends Controller
             $wallet->delete();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Wallet deleted successfully');
+            return to_route('wallet.index')->with('success', 'Wallet deleted successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());

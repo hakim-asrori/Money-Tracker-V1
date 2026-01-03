@@ -1,6 +1,7 @@
+import { EmptyData } from '@/components/mobiles/empty';
 import { HeaderSection } from '@/components/mobiles/header';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
@@ -15,6 +16,14 @@ import {
     DrawerTrigger,
 } from '@/components/ui/drawer';
 import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
     InputGroup,
     InputGroupAddon,
     InputGroupInput,
@@ -22,18 +31,24 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import AppMobileDetailLayout from '@/layouts/app/app-mobile-detail-layout';
-import { formatNumber, limitString, showToast } from '@/lib/utils';
+import { formatNumber, limitString, showToast, swalConfirm } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import income from '@/routes/income';
+import incomeRouter from '@/routes/income';
 import {
     IncomeInterface,
     MetaPagination,
     SharedData,
     WalletInterface,
 } from '@/types';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { PlusIcon, SearchIcon } from 'lucide-react';
+import {
+    EditIcon,
+    MoreVerticalIcon,
+    PlusIcon,
+    SearchIcon,
+    Trash2Icon,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function Income({
@@ -46,6 +61,18 @@ export default function Income({
     const page = usePage().props as any as SharedData;
     const [searchWallet, setSearchWallet] = useState('');
     const [incomeSelected, setIncomeSelected] = useState<IncomeInterface>();
+
+    const handleDelete = async (income: IncomeInterface) => {
+        const confirmed = await swalConfirm({ placeholder: "entry 'delete'" });
+
+        if (!confirmed) return;
+
+        router.delete(incomeRouter.destroy(income.id), {
+            onSuccess: () => {
+                showToast(page.flash);
+            },
+        });
+    };
 
     useEffect(() => {
         showToast(page.flash);
@@ -95,7 +122,7 @@ export default function Income({
                                                 className="mb-3 flex items-center justify-between gap-3 border-b pb-3"
                                                 onClick={() => {
                                                     router.visit(
-                                                        income.create({
+                                                        incomeRouter.create({
                                                             mergeQuery: {
                                                                 wallet: wallet.id,
                                                             },
@@ -121,43 +148,79 @@ export default function Income({
             </HeaderSection>
 
             <div className="px-4">
-                {incomes.data.map((income, index) => (
-                    <Card key={index} onClick={() => setIncomeSelected(income)}>
-                        <CardContent className="space-y-2 text-sm">
-                            <div className="flex items-center justify-between gap-2">
-                                <h1>Wallet</h1>
-                                <h1 className="font-bold">
-                                    {income.wallet.name}
+                {incomes.data.length < 1 ? (
+                    <EmptyData title="Incomes not found" />
+                ) : (
+                    incomes.data.map((income, index) => (
+                        <Card key={index}>
+                            <CardHeader className="flex-row items-center justify-between">
+                                <h1
+                                    className="text-sm font-medium"
+                                    onClick={() => setIncomeSelected(income)}
+                                >
+                                    {format(
+                                        income.published_at,
+                                        'dd MMM yyyy, HH:mm',
+                                    )}
                                 </h1>
-                            </div>
-                            <div className="flex items-center justify-between gap-2">
-                                <h1>Category</h1>
-                                <Badge>{income.category.name}</Badge>
-                            </div>
-                            <div className="flex items-center justify-between gap-2">
-                                <h1>Title</h1>
-                                <h1 className="line-clamp-1 font-bold">
-                                    {income.title}
-                                </h1>
-                            </div>
-                            <div className="flex items-center justify-between gap-2">
-                                <h1>Amount</h1>
-                                <h1 className="line-clamp-1 font-bold">
-                                    Rp {formatNumber(income.amount)}
-                                </h1>
-                            </div>
-                        </CardContent>
-                        <Separator />
-                        <CardFooter>
-                            <h1 className="text-sm font-medium">
-                                {format(
-                                    income.published_at,
-                                    'dd MMM yyyy, HH:mm',
-                                )}
-                            </h1>
-                        </CardFooter>
-                    </Card>
-                ))}
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger>
+                                        <MoreVerticalIcon size={20} />
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                        <DropdownMenuLabel>
+                                            Actions
+                                        </DropdownMenuLabel>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem asChild>
+                                            <Link
+                                                href={incomeRouter.edit(
+                                                    income.id,
+                                                )}
+                                            >
+                                                <EditIcon /> Edit
+                                            </Link>
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem
+                                            variant="destructive"
+                                            onClick={() => handleDelete(income)}
+                                        >
+                                            <Trash2Icon /> Delete
+                                        </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </CardHeader>
+                            <Separator />
+                            <CardContent
+                                className="space-y-2 text-sm"
+                                onClick={() => setIncomeSelected(income)}
+                            >
+                                <div className="flex items-center justify-between gap-2">
+                                    <h1>Wallet</h1>
+                                    <h1 className="font-bold">
+                                        {income.wallet.name}
+                                    </h1>
+                                </div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <h1>Category</h1>
+                                    <Badge>{income.category.name}</Badge>
+                                </div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <h1>Title</h1>
+                                    <h1 className="line-clamp-1 font-bold">
+                                        {income.title}
+                                    </h1>
+                                </div>
+                                <div className="flex items-center justify-between gap-2">
+                                    <h1>Amount</h1>
+                                    <h1 className="line-clamp-1 font-bold">
+                                        Rp {formatNumber(income.amount)}
+                                    </h1>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))
+                )}
             </div>
 
             <Dialog

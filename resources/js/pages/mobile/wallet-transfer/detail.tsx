@@ -22,7 +22,7 @@ export default function WalletTransferCreate({
     walletTransfer: WalletTransferInterface;
 }) {
     return (
-        <AppMobileDetailLayout className="relative min-h-svh space-y-4 overflow-hidden bg-white">
+        <AppMobileDetailLayout className="relative min-h-svh space-y-4 overflow-hidden">
             <Head title="Detail Transfer" />
 
             <div className="absolute -top-[55%] -left-8 z-20 h-screen w-[calc(100%+4rem)] rounded-full bg-lprimary" />

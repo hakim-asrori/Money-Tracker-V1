@@ -33,7 +33,7 @@ export default function AppMobileLayout({
                 </div>
 
                 <div className="fixed bottom-5 w-full px-4">
-                    <div className="rounded-full border bg-white/70 p-2 shadow dark:bg-primary/70">
+                    <div className="rounded-full border bg-white/70 p-2 shadow dark:bg-muted">
                         <div className="flex items-center justify-between gap-2">
                             <Link
                                 href={dashboard()}

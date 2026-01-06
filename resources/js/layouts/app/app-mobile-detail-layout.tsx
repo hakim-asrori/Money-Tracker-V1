@@ -11,7 +11,7 @@ export default function AppMobileDetailLayout({
     return (
         <div>
             <div className={cn(className, 'pb-10')}>{children}</div>
-            <Toaster position="top-right" />
+            <Toaster position="bottom-center" />
         </div>
     );
 }

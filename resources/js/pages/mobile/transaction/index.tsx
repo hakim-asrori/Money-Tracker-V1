@@ -391,7 +391,7 @@ export default function Transaction({
                                 </Field>
                                 <Field>
                                     <FieldLabel htmlFor="amount">
-                                        Wallet
+                                        Amount
                                     </FieldLabel>
                                     <InputGroup>
                                         <InputGroupInput

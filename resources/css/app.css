@@ -64,6 +64,8 @@
 
     --color-lprimary: var(--lprimary);
     --color-lsecondary: var(--lsecondary);
+    --color-lsuccess: var(--lsuccess);
+    --color-lwarning: var(--lwarning);
 }
 
 :root {
@@ -102,6 +104,8 @@
     --sidebar-ring: oklch(0.87 0 0);
     --lprimary: var(--color-teal-900);
     --lsecondary: var(--color-lime-300);
+    --lsuccess: var(--color-green-500);
+    --lwarning: var(--color-amber-500);
 }
 
 .dark {

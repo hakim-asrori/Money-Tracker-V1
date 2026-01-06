@@ -115,16 +115,12 @@ export default function WalletTransferCreate({
                 </Card>
             </div>
 
-            <div className="fixed bottom-0 w-full">
-                <Card className="rounded-none">
-                    <CardContent>
-                        <Button className="w-full" variant={'lprimary'} asChild>
-                            <Link href={walletTransferRouter.index()}>
-                                <CheckCircle2Icon /> Finished
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
+            <div className="fixed bottom-4 w-full px-4">
+                <Button className="w-full" variant={'lprimary'} asChild>
+                    <Link href={walletTransferRouter.index()}>
+                        <CheckCircle2Icon /> Finished
+                    </Link>
+                </Button>
             </div>
         </AppMobileDetailLayout>
     );

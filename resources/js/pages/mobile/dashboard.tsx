@@ -9,6 +9,7 @@ import {
 import AppMobileLayout from '@/layouts/app/app-mobile-layout';
 import { formatNumber } from '@/lib/utils';
 import { dashboard } from '@/routes';
+import debt from '@/routes/debt';
 import income from '@/routes/income';
 import transaction from '@/routes/transaction';
 import walletTransfer from '@/routes/wallet-transfer';
@@ -110,7 +111,10 @@ export default function Dashboard({
                             <h1 className="text-xs font-semibold">Transfers</h1>
                         </div>
                     </Link>
-                    <Link className="flex w-full flex-col items-center gap-0.5">
+                    <Link
+                        href={debt.index()}
+                        className="flex w-full flex-col items-center gap-0.5"
+                    >
                         <div className="rounded-full bg-muted p-2.5">
                             <UploadCloudIcon size={20} />
                         </div>

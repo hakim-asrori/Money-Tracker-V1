@@ -28,7 +28,7 @@ export default function Detail({
             <div className="absolute -top-[55%] -left-8 z-20 h-screen w-[calc(100%+4rem)] rounded-full bg-lprimary" />
             <div className="absolute top-32 left-[50%] z-30 size-52 translate-x-[-50%] rounded-full bg-black/10" />
 
-            <div className="relative z-40 space-y-5 px-4 pt-10">
+            <div className="relative z-40 space-y-5 px-4 pt-10 pb-5">
                 <div className="flex flex-col items-center justify-center gap-5">
                     <div className="flex size-[4.5rem] animate-pulse items-center justify-center rounded-full bg-lprimary duration-300">
                         <div className="flex size-16 items-center justify-center rounded-full bg-secondary">
@@ -148,16 +148,12 @@ export default function Detail({
                 </Card>
             </div>
 
-            <div className="fixed bottom-0 w-full">
-                <Card className="rounded-none">
-                    <CardContent>
-                        <Button className="w-full" variant={'lprimary'} asChild>
-                            <Link href={transactionRouter.index()}>
-                                <CheckCircle2Icon /> Finished
-                            </Link>
-                        </Button>
-                    </CardContent>
-                </Card>
+            <div className="absolute bottom-4 w-full px-4">
+                <Button className="w-full" variant={'lprimary'} asChild>
+                    <Link href={transactionRouter.index()}>
+                        <CheckCircle2Icon /> Finished
+                    </Link>
+                </Button>
             </div>
         </AppMobileDetailLayout>
     );

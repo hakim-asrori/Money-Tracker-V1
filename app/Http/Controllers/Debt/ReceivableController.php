@@ -9,14 +9,16 @@ use App\Http\Controllers\Controller;
 use App\Models\{Debt, DebtTarget, Mutation, Wallet};
 use App\Services\WalletService;
 use Inertia\Inertia;
+use Jenssegers\Agent\Agent;
 
 class ReceivableController extends Controller
 {
-    protected $user;
+    protected $user, $agent;
 
     public function __construct(protected Debt $debt, protected Wallet $wallet)
     {
         $this->user = Auth::user();
+        $this->agent = new Agent();
     }
 
     public function index(Request $request)
@@ -26,10 +28,18 @@ class ReceivableController extends Controller
         $debtQuery = $this->debt->query();
         $debtQuery->where('user_id', $this->user->id);
         $debtQuery->where('type', $this->debt::TYPE_CREDIT);
-        $debtQuery->with(['wallet', 'target.debtPayments.walletTarget', 'transaction']);
+        $debtQuery->with(['wallet', 'target.debtPayments.walletTarget', 'transaction', 'targets']);
         $debtQuery->withSum('targets as total_remaining_amount', 'remaining_amount');
         $debtQuery->withSum('targets as total_paid_amount', 'paid_amount');
-        $debts = $debtQuery->paginate();
+        $debtQuery->orderByDesc('published_at');
+        $debts = $debtQuery->paginate($request->get('perPage', 10));
+
+        if ($this->agent->isMobile()) {
+            return Inertia::render('mobile/debt/receivable/index', [
+                'debts' => $debts,
+                'wallets' => $wallets
+            ]);
+        }
 
         return Inertia::render('debt/receivable/index', [
             'debts' => $debts,
@@ -38,9 +48,24 @@ class ReceivableController extends Controller
     }
 
 
-    public function create()
+    public function create(Request $request)
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return redirect()->route('income.index');
+        }
+
+        if (!$request->has('wallet')) {
+            return to_route('income.index')->with('warning', 'Please select wallet');
+        }
+
+        $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
+        if (!$wallet) {
+            return to_route('income.index')->with('warning', 'Wallet not found');
+        }
+
+        return Inertia::render('mobile/debt/receivable/create', [
+            'wallet' => $wallet
+        ]);
     }
 
 
@@ -91,7 +116,7 @@ class ReceivableController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Debt receivable created successfully');
+            return redirect()->route('debt.receivables.index')->with('success', 'Debt receivable created successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());
@@ -102,6 +127,18 @@ class ReceivableController extends Controller
     public function show(string $id)
     {
         abort(404);
+    }
+
+
+    public function edit(Debt $receivable)
+    {
+        if (!$this->agent->isMobile()) {
+            return redirect()->route('income.index');
+        }
+
+        return Inertia::render('mobile/debt/receivable/edit', [
+            'receivable' => $receivable->load('target')
+        ]);
     }
 
 
@@ -131,7 +168,7 @@ class ReceivableController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Debt receivable updated successfully');
+            return redirect()->route('debt.receivables.index')->with('success', 'Debt receivable updated successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());

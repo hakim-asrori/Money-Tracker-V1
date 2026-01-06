@@ -60,7 +60,7 @@ import {
     showToast,
     swalConfirm,
 } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import debt from '@/routes/debt';
 import receivableRouter from '@/routes/debt/receivables';
 import {
     DebtInterface,
@@ -126,7 +126,7 @@ export default function Index({
             <Head title="Debt Receivables" />
             <HeaderSection
                 title="Debt Receive"
-                path={dashboard().url}
+                path={debt.index().url}
                 rightNode={
                     <Drawer>
                         <DrawerTrigger className="flex justify-end">

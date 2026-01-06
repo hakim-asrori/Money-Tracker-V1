@@ -2,18 +2,14 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
+use Illuminate\Validation\Rule;
 use App\Enums\CategoryTypeConstant;
 use App\Facades\MessageFixer;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Mutation;
-use App\Models\Wallet;
+use App\Models\{Category, Mutation, Wallet};
 use App\Services\WalletService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class WalletController extends Controller
 {

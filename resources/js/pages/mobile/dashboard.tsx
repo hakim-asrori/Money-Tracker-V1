@@ -10,13 +10,13 @@ import AppMobileLayout from '@/layouts/app/app-mobile-layout';
 import { formatNumber } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import income from '@/routes/income';
+import transaction from '@/routes/transaction';
 import walletTransfer from '@/routes/wallet-transfer';
 import { SharedData, type BreadcrumbItem } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRightLeftIcon,
     BanknoteIcon,
-    GitBranchIcon,
     HandCoinsIcon,
     ShoppingCartIcon,
     TrendingUpDownIcon,
@@ -86,7 +86,10 @@ export default function Dashboard({
                             <h1 className="text-xs font-semibold">Incomes</h1>
                         </div>
                     </Link>
-                    <Link className="flex w-full flex-col items-center gap-0.5">
+                    <Link
+                        href={transaction.index()}
+                        className="flex w-full flex-col items-center gap-0.5"
+                    >
                         <div className="rounded-full bg-muted p-2.5">
                             <ShoppingCartIcon size={20} />
                         </div>
@@ -133,34 +136,12 @@ export default function Dashboard({
                 </Card>
                 <Card>
                     <CardHeader className="font-bold">
-                        <ArrowRightLeftIcon size={30} />
-                    </CardHeader>
-                    <CardContent>
-                        <CardTitle>Total Transfer</CardTitle>
-                        <CardDescription>
-                            Rp {formatNumber(summaries.totalTransfers)}
-                        </CardDescription>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="font-bold">
                         <BanknoteIcon size={30} />
                     </CardHeader>
                     <CardContent>
                         <CardTitle>Total Transaction</CardTitle>
                         <CardDescription>
                             Rp {formatNumber(summaries.totalTransactions)}
-                        </CardDescription>
-                    </CardContent>
-                </Card>
-                <Card>
-                    <CardHeader className="font-bold">
-                        <GitBranchIcon size={30} />
-                    </CardHeader>
-                    <CardContent>
-                        <CardTitle>Total Debt</CardTitle>
-                        <CardDescription>
-                            Rp {formatNumber(summaries.totalDebts)}
                         </CardDescription>
                     </CardContent>
                 </Card>

@@ -91,7 +91,7 @@ export default function Income({
                         </DrawerTrigger>
                         <DrawerContent>
                             <DrawerHeader>
-                                <DrawerTitle>List of wallets</DrawerTitle>
+                                <DrawerTitle>Choose wallet</DrawerTitle>
                             </DrawerHeader>
                             <Separator className="mb-5" />
                             <div className="px-4 pb-5">
@@ -147,7 +147,7 @@ export default function Income({
                 <span>&nbsp;</span>
             </HeaderSection>
 
-            <div className="px-4">
+            <div className="space-y-4 px-4">
                 {incomes.data.length < 1 ? (
                     <EmptyData title="Incomes not found" />
                 ) : (

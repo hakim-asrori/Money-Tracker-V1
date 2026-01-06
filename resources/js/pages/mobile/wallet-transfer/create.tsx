@@ -16,6 +16,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
 import { cn, formatNumber } from '@/lib/utils';
 import walletTransfer from '@/routes/wallet-transfer';
 import { WalletInterface } from '@/types';
@@ -196,7 +197,7 @@ export default function WalletTransferCreate({
                                 className="w-full"
                                 disabled={processing || amount + fee < 1}
                             >
-                                Transfer
+                                Transfer {processing && <Spinner />}
                             </Button>
                         </div>
                     </div>

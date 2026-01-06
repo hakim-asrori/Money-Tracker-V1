@@ -93,7 +93,7 @@ class IncomeController extends Controller
             'category' => ['required', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
             'wallet' => ['required', 'integer', Rule::exists('wallets', 'id')->where('user_id', $this->user->id)->whereNull('deleted_at')],
             'title' => 'required|string|min:3|max:200',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'description' => 'required|string|min:3|max:200',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
         ]);

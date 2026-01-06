@@ -95,7 +95,7 @@ class WalletTransferController extends Controller
                 'different:wallet_origin',
                 Rule::exists('wallets', 'id')->whereNull('deleted_at')->where('user_id', $this->user->id),
             ],
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'fee' => 'required|numeric|min:0',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
         ]);

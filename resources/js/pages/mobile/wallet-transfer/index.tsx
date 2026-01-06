@@ -150,7 +150,7 @@ export default function WalletTransfers({
                             <DrawerContent>
                                 <DrawerHeader>
                                     <DrawerTitle>
-                                        List of origin wallets
+                                        Choose wallet origin
                                     </DrawerTitle>
                                 </DrawerHeader>
                                 <Separator className="mb-5" />

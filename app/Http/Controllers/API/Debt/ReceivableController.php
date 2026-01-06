@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers\API\Debt;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
+use Illuminate\Validation\Rule;
 use App\Facades\MessageFixer;
 use App\Http\Controllers\Controller;
-use App\Models\Debt;
-use App\Models\DebtTarget;
-use App\Models\Mutation;
-use App\Models\Wallet;
+use App\Models\{Debt, DebtTarget, Mutation, Wallet};
 use App\Services\WalletService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class ReceivableController extends Controller
 {
@@ -52,7 +47,7 @@ class ReceivableController extends Controller
             ],
             'title' => 'required|string|min:3|max:100',
             'target' => 'required|string|min:3|max:100',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'fee' => 'required|numeric|min:0',
             'description' => 'required|string|min:3|max:255',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
@@ -176,7 +171,7 @@ class ReceivableController extends Controller
                 'integer',
                 Rule::exists('wallets', 'id')->whereNull('deleted_at')->where('user_id', $this->user->id)
             ],
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'note' => 'string|min:3|max:255',
             'paid_at' => 'required|date_format:Y-m-d\TH:i',
         ]);
@@ -187,7 +182,7 @@ class ReceivableController extends Controller
 
         DB::beginTransaction();
 
-        $wallet = $this->wallet->where('user_id', $this->user->id)->find($receivable->wallet_id);
+        $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
 
         if ($request->amount > $receivable->target->remaining_amount) {
             return MessageFixer::warning('Amount is greater than remaining amount');

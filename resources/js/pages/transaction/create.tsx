@@ -260,7 +260,6 @@ function FormSplitBill({ users, errors }: { users: User[]; errors: any }) {
             </CardHeader>
             {useSplitBill && (
                 <CardContent>
-                    {JSON.stringify(errors.targets)}
                     <Table>
                         <TableHeader>
                             <TableRow>

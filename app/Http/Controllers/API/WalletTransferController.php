@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
+use Illuminate\Validation\Rule;
 use App\Facades\MessageFixer;
 use App\Http\Controllers\Controller;
-use App\Models\Mutation;
-use App\Models\Wallet;
-use App\Models\WalletTransfer;
+use App\Models\{Mutation, Wallet, WalletTransfer};
 use App\Services\WalletService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class WalletTransferController extends Controller
 {
@@ -64,7 +60,7 @@ class WalletTransferController extends Controller
                 'different:wallet_origin',
                 Rule::exists('wallets', 'id')->whereNull('deleted_at')->where('user_id', $this->user->id),
             ],
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'fee' => 'required|numeric|min:0',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
         ]);

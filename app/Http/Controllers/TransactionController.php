@@ -9,14 +9,16 @@ use App\Enums\CategoryTypeConstant;
 use App\Models\{Category, Debt, DebtTarget, Mutation, Transaction, Wallet};
 use App\Services\WalletService;
 use Inertia\Inertia;
+use Jenssegers\Agent\Agent;
 
 class TransactionController extends Controller
 {
-    protected $user;
+    protected $user, $agent;
 
     public function __construct(protected Category $category, protected Wallet $wallet, protected Transaction $transaction, protected DebtTarget $debtTarget)
     {
         $this->user = Auth::user();
+        $this->agent = new Agent();
     }
 
     public function index(Request $request)
@@ -30,11 +32,19 @@ class TransactionController extends Controller
         $transactionQuery = $this->transaction->query();
         $transactionQuery->where('user_id', $this->user->id);
         $transactionQuery->orderByDesc('published_at');
-        $transactions = $transactionQuery->with(['category', 'wallet', 'debt'])->paginate($request->get('perPage', 10));
+        $transactions = $transactionQuery->with(['category', 'wallet', 'debt.targets'])->paginate($request->get('perPage', 10));
 
         $transaction = null;
         if ($request->has('edit') && $request->filled('edit')) {
             $transaction = $this->transaction->with(['category', 'wallet', 'debt'])->find($request->get('edit'));
+        }
+
+        if ($this->agent->isMobile()) {
+            return Inertia::render('mobile/transaction/index', [
+                'wallets' => $wallets,
+                'transactions' => $transactions,
+                'filters' => $request->all('search', 'perPage', 'page', 'category', 'wallet')
+            ]);
         }
 
         return Inertia::render('transaction/index', [
@@ -47,14 +57,25 @@ class TransactionController extends Controller
     }
 
 
-    public function create()
+    public function create(Request $request)
     {
         $categories = $this->category
             ->where('user_id', $this->user->id)
             ->where('type', CategoryTypeConstant::TRANSACTION->value)
             ->get();
-        $wallets = $this->wallet->where('user_id', $this->user->id)->get();
         $users = $this->user->where('id', '!=', $this->user->id)->get();
+
+        if ($this->agent->isMobile()) {
+            $wallet = $this->wallet->where('user_id', $this->user->id)->find($request->wallet);
+
+            return Inertia::render('mobile/transaction/create', [
+                'categories' => $categories,
+                'users' => $users,
+                'wallet' => $wallet
+            ]);
+        }
+
+        $wallets = $this->wallet->where('user_id', $this->user->id)->get();
 
         return Inertia::render('transaction/create', [
             'categories' => $categories,
@@ -70,7 +91,7 @@ class TransactionController extends Controller
             'category' => ['required', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
             'wallet' => ['required', 'integer', Rule::exists('wallets', 'id')->where('user_id', $this->user->id)->whereNull('deleted_at')],
             'title' => 'required|string|min:3|max:200',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'fee' => 'required|numeric|min:0',
             'description' => 'required|string|min:3|max:200',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
@@ -137,6 +158,12 @@ class TransactionController extends Controller
 
     public function show(Transaction $transaction)
     {
+        if ($this->agent->isMobile()) {
+            return Inertia::render('mobile/transaction/detail', [
+                'transaction' => $transaction->load(['category', 'wallet', 'debt.targets.debtPayments.walletTarget']),
+            ]);
+        }
+
         $wallets = $this->wallet->where('user_id', $this->user->id)->get();
 
         return Inertia::render('transaction/show', [
@@ -148,11 +175,14 @@ class TransactionController extends Controller
     public function debtPayment(Request $request, $id)
     {
         $target = $this->debtTarget->find($id);
+        if (!$target) {
+            return redirect()->back()->with('error', 'Target not found');
+        }
 
         $request->validate([
-            'amount' => 'required|numeric|min:0|max:' . $target->remaining_amount,
+            'amount' => 'required|numeric|min:1|max:' . $target->remaining_amount,
             'wallet' => ['required', 'integer', Rule::exists('wallets', 'id')->where('user_id', $this->user->id)->whereNull('deleted_at')],
-            'note' => 'required|string|min:3|max:200',
+            'note' => 'required|string|min:1|max:200',
             'paid_at' => 'required|date_format:Y-m-d\TH:i',
         ]);
 
@@ -192,7 +222,24 @@ class TransactionController extends Controller
 
     public function edit(string $id)
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return redirect()->route('transaction.index');
+        }
+
+        $transaction = $this->transaction->where('user_id', $this->user->id)->find($id);
+        if (!$transaction) {
+            return redirect()->route('transaction.index');
+        }
+
+        $categories = $this->category
+            ->where('user_id', $this->user->id)
+            ->where('type', CategoryTypeConstant::TRANSACTION->value)
+            ->get();
+
+        return Inertia::render('mobile/transaction/edit', [
+            'transaction' => $transaction->load(['category', 'wallet', 'debt.targets.debtPayments.walletTarget']),
+            'categories' => $categories
+        ]);
     }
 
 
@@ -216,7 +263,7 @@ class TransactionController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Transaction successfully updated');
+            return redirect()->route('transaction.index')->with('success', 'Transaction successfully updated');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());

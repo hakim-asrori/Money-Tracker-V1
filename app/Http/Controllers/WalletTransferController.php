@@ -8,13 +8,15 @@ use Illuminate\Validation\Rule;
 use App\Models\{Mutation, Wallet, WalletTransfer};
 use App\Services\WalletService;
 use Inertia\Inertia;
+use Jenssegers\Agent\Agent;
 
 class WalletTransferController extends Controller
 {
-    protected $user;
+    protected $user, $agent;
     public function __construct(protected Wallet $wallet, protected WalletTransfer $walletTransfer)
     {
         $this->user = Auth::user();
+        $this->agent = new Agent();
     }
 
     public function index(Request $request)
@@ -39,6 +41,14 @@ class WalletTransferController extends Controller
         $walletTransferQuery->orderByDesc('published_at');
         $walletTransfers = $walletTransferQuery->with(['walletOrigin', 'walletTarget'])->paginate($request->get('perPage', 10));
 
+        if ($this->agent->isMobile()) {
+            return Inertia::render('mobile/wallet-transfer/index', [
+                'wallets' => $wallets,
+                'walletTransfers' => $walletTransfers,
+                'filters' => $request->only('origin', 'target', 'publishedAt', 'perPage', 'page'),
+            ]);
+        }
+
         return Inertia::render('wallet-transfer', [
             'wallets' => $wallets,
             'filters' => $request->only('origin', 'target', 'publishedAt', 'perPage', 'page'),
@@ -47,9 +57,27 @@ class WalletTransferController extends Controller
     }
 
 
-    public function create()
+    public function create(Request $request)
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return to_route('wallet-transfer.index');
+        }
+
+        if (!$request->has('origin')) {
+            return to_route('wallet-transfer.index')->with('warning', 'Please select wallet origin');
+        }
+
+        $walletOrigin = $this->wallet->whereUserId($this->user->id)->find($request->get('origin'));
+        if (!$walletOrigin) {
+            return to_route('wallet-transfer.index')->with('warning', 'Wallet origin not found');
+        }
+
+        $wallets = $this->wallet->where('user_id', $this->user->id)->where('id', '!=', $walletOrigin->id)->get();
+
+        return Inertia::render('mobile/wallet-transfer/create', [
+            'walletOrigin' => $walletOrigin,
+            'wallets' => $wallets
+        ]);
     }
 
 
@@ -67,7 +95,7 @@ class WalletTransferController extends Controller
                 'different:wallet_origin',
                 Rule::exists('wallets', 'id')->whereNull('deleted_at')->where('user_id', $this->user->id),
             ],
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'fee' => 'required|numeric|min:0',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
         ]);
@@ -99,12 +127,19 @@ class WalletTransferController extends Controller
             ]);
 
             WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->amount, Mutation::TYPE_DB);
-            WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->fee, Mutation::TYPE_DB);
+            if ($request->fee > 0) {
+                WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletOrigin->id, $request->fee, Mutation::TYPE_DB);
+            }
 
             WalletService::createWalletMutation($walletTransfer, $this->user->id, $walletTarget->id, $request->amount, Mutation::TYPE_CR);
 
             DB::commit();
-            return redirect()->back()->with('success', 'Wallet Transfer created successfully');
+
+            if ($this->agent->isMobile()) {
+                return to_route('wallet-transfer.show', $walletTransfer)->with('success', 'Wallet Transfer created successfully');
+            }
+
+            return to_route('wallet-transfer.index')->with('success', 'Wallet Transfer created successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('warning', $th->getMessage());
@@ -114,7 +149,18 @@ class WalletTransferController extends Controller
 
     public function show(string $id)
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return to_route('wallet-transfer.index');
+        }
+
+        $walletTransfer = $this->walletTransfer->with(['walletOrigin', 'walletTarget'])->find($id);
+        if (!$walletTransfer) {
+            return to_route('wallet-transfer.index')->with('warning', 'Wallet Transfer not found');
+        }
+
+        return Inertia::render('mobile/wallet-transfer/detail', [
+            'walletTransfer' => $walletTransfer
+        ]);
     }
 
 

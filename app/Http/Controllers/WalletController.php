@@ -9,14 +9,16 @@ use App\Enums\CategoryTypeConstant;
 use App\Models\{Category, Mutation, Wallet};
 use App\Services\WalletService;
 use Inertia\Inertia;
+use Jenssegers\Agent\Agent;
 
 class WalletController extends Controller
 {
-    protected $user;
+    protected $user, $agent;
 
-    public function __construct(protected Category $category, protected Wallet $wallet)
+    public function __construct(protected Category $category, protected Wallet $wallet, protected Mutation $mutation)
     {
         $this->user = Auth::user();
+        $this->agent = new Agent();
     }
 
     public function index(Request $request)
@@ -38,6 +40,13 @@ class WalletController extends Controller
         $walletQuery->with('category');
         $wallets = $walletQuery->paginate($request->get('perPage', 10));
 
+        if ($this->agent->isMobile()) {
+            return Inertia::render('mobile/wallet/index', [
+                'wallets' => $wallets,
+                'filters' => $request->only('search', 'type', 'page', 'perPage'),
+            ]);
+        }
+
         return Inertia::render('wallet', [
             'wallets' => $wallets,
             'categories' => $categories,
@@ -48,7 +57,18 @@ class WalletController extends Controller
 
     public function create()
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return to_route('wallet.index');
+        }
+
+        $categories = $this->category
+            ->where('user_id', $this->user->id)
+            ->where('type', CategoryTypeConstant::WALLET->value)
+            ->get();
+
+        return Inertia::render('mobile/wallet/create', [
+            'categories' => $categories
+        ]);
     }
 
 
@@ -81,7 +101,7 @@ class WalletController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', 'Wallet created successfully');
+            return to_route('wallet.index')->with('success', 'Wallet created successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());
@@ -89,9 +109,28 @@ class WalletController extends Controller
     }
 
 
-    public function show(string $id)
+    public function show(string $id, Request $request)
     {
-        //
+        if (!$this->agent->isMobile()) {
+            return to_route('wallet.index');
+        }
+
+        $wallet = $this->wallet->with(['category', 'mutations'])->find($id);
+        if (!$wallet) {
+            return to_route('wallet.index')->with('warning', 'Wallet not found');
+        }
+
+        $mutations = $this->mutation->where('wallet_id', $wallet->id)->orderByDesc('created_at')->paginate($request->get('perPage', 10));
+        $categories = $this->category
+            ->where('user_id', $this->user->id)
+            ->where('type', CategoryTypeConstant::WALLET->value)
+            ->get();
+
+        return Inertia::render('mobile/wallet/detail', [
+            'wallet' => $wallet,
+            'mutations' => $mutations,
+            'categories' => $categories
+        ]);
     }
 
 
@@ -145,7 +184,7 @@ class WalletController extends Controller
             $wallet->delete();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Wallet deleted successfully');
+            return to_route('wallet.index')->with('success', 'Wallet deleted successfully');
         } catch (\Throwable $th) {
             DB::rollBack();
             return redirect()->back()->with('error', $th->getMessage());

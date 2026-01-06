@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{CategoryController, DashboardController, IncomeController, InvestmanController, MutationController, TransactionController, WalletController, WalletTransferController};
 use App\Http\Controllers\Debt\{IndebtednesController, ReceivableController};
 use Inertia\Inertia;
+use Jenssegers\Agent\Agent;
 
 Route::get('/', function () {
     return Inertia::render('welcome');
@@ -22,6 +23,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('income', IncomeController::class);
 
     Route::prefix('debt')->group(function () {
+        Route::get('/', function () {
+            $agent = new Agent();
+
+            if ($agent->isMobile()) {
+                return Inertia::render('mobile/debt/index');
+            }
+
+            return to_route('debt.receivables.index');
+        })->name('debt.index');
+
         Route::post('receivables/payment/{receivable}', [ReceivableController::class, 'payment'])->name('debt.receivables.payment');
         Route::resource('receivables', ReceivableController::class)
             ->names('debt.receivables');

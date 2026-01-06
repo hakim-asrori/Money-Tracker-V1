@@ -47,6 +47,11 @@ class Wallet extends Model
         return $this->morphOne(Mutation::class, 'mutable')->withTrashed();
     }
 
+    public function mutations()
+    {
+        return $this->hasMany(Mutation::class, 'wallet_id')->withTrashed();
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class)->withTrashed();

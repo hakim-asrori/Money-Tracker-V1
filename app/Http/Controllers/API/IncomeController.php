@@ -2,18 +2,13 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
+use Illuminate\Validation\Rule;
 use App\Facades\MessageFixer;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Income;
-use App\Models\Mutation;
-use App\Models\Wallet;
+use App\Models\{Category, Income, Mutation, Wallet};
 use App\Services\WalletService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
 
 class IncomeController extends Controller
 {
@@ -61,7 +56,7 @@ class IncomeController extends Controller
             'category' => ['required', 'integer', Rule::exists('categories', 'id')->whereNull('deleted_at')],
             'wallet' => ['required', 'integer', Rule::exists('wallets', 'id')->where('user_id', $this->user->id)->whereNull('deleted_at')],
             'title' => 'required|string|min:3|max:200',
-            'amount' => 'required|numeric|min:0',
+            'amount' => 'required|numeric|min:1',
             'description' => 'required|string|min:3|max:200',
             'published_at' => 'required|date_format:Y-m-d\TH:i',
         ]);

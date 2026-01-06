@@ -61,6 +61,11 @@
     --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
     --color-sidebar-border: var(--sidebar-border);
     --color-sidebar-ring: var(--sidebar-ring);
+
+    --color-lprimary: var(--lprimary);
+    --color-lsecondary: var(--lsecondary);
+    --color-lsuccess: var(--lsuccess);
+    --color-lwarning: var(--lwarning);
 }
 
 :root {
@@ -97,6 +102,10 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.87 0 0);
+    --lprimary: var(--color-teal-900);
+    --lsecondary: var(--color-lime-300);
+    --lsuccess: var(--color-green-500);
+    --lwarning: var(--color-amber-500);
 }
 
 .dark {
@@ -143,6 +152,14 @@
     body {
         @apply bg-background text-foreground;
     }
+}
+
+.dark [data-sonner-toaster] [data-description] {
+    @apply dark:text-foreground!;
+}
+
+[data-sonner-toaster] [data-description] {
+    @apply text-muted-foreground!;
 }
 
 .prose-custom > * {

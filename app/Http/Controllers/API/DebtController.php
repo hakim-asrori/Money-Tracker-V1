@@ -2,16 +2,12 @@
 
 namespace App\Http\Controllers\API;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
+use Illuminate\Validation\Rule;
 use App\Facades\MessageFixer;
 use App\Http\Controllers\Controller;
-use App\Models\Debt;
-use App\Models\Mutation;
-use App\Models\Wallet;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\Rule;
+use App\Models\{Debt, Mutation, Wallet};
 
 class DebtController extends Controller
 {
@@ -37,7 +33,7 @@ class DebtController extends Controller
             ],
             'type' => 'required|integer|in:1,2',
             'target_name' => 'required|string|min:3|max:100',
-            'target_amount' => 'required|numeric|min:0',
+            'target_amount' => 'required|numeric|min:1',
             'fee' => 'required|numeric|min:0',
             'description' => 'required|string|min:3|max:255',
             'published_at' => 'required|date_format:Y-m-d\TH:i',

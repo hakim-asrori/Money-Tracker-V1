@@ -30,7 +30,7 @@ export function HeaderSection({
 }) {
     return (
         <div className={cn(className, 'mb-10')}>
-            <div className="fixed top-0 z-50 w-screen">
+            <div className="fixed top-0 z-50 w-screen bg-white dark:bg-background">
                 <div className={cn('grid grid-cols-3 items-center gap-3 p-4')}>
                     <Link href={path} className="font-bold">
                         <ChevronLeftIcon />

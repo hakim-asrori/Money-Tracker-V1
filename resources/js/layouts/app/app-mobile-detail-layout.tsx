@@ -1,4 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
+import { LoadingProvider } from '@/contexts/loading-context';
 import { cn } from '@/lib/utils';
 
 export default function AppMobileDetailLayout({
@@ -9,9 +10,9 @@ export default function AppMobileDetailLayout({
     className?: string;
 }) {
     return (
-        <div>
+        <LoadingProvider>
             <div className={cn(className, 'pb-10')}>{children}</div>
             <Toaster position="bottom-center" />
-        </div>
+        </LoadingProvider>
     );
 }

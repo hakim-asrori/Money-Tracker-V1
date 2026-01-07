@@ -67,4 +67,9 @@ class Transaction extends Model
     {
         return $this->hasOne(Debt::class)->withTrashed();
     }
+
+    public function document()
+    {
+        return $this->hasOne(Document::class)->withTrashed();
+    }
 }

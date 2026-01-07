@@ -48,11 +48,12 @@ class MutationController extends Controller
             ]);
         }
 
-        $inquiryGroups = $mutationQueryClone->get()->groupBy(fn($m) => $m->mutable_type);
+        $inquiryGroups = $mutationQueryClone->where('user_id', $this->user->id)->get()->groupBy(fn($m) => $m->mutable_type);
         $inquiryGroups = $inquiryGroups->keys()->map(fn($key) => class_basename($key))->toArray();
 
         $walletGroups = $mutationQueryClone
             ->with('wallet')
+            ->where('user_id', $this->user->id)
             ->get()
             ->groupBy('wallet_id')
             ->mapWithKeys(function ($mutations, $walletId) {

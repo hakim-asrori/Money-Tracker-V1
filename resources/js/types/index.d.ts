@@ -107,6 +107,12 @@ export interface TransactionInterface extends CommonColumn {
     debt?: DebtInterface;
 }
 
+export interface DocumentSourceInterface extends CommonColumn {
+    name: string;
+    logo: string;
+    is_active: boolean;
+}
+
 export interface DebtInterface extends CommonColumn {
     type: 1 | 2;
     title: string;

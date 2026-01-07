@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\{CategoryController, DashboardController, IncomeController, InvestmanController, MutationController, TransactionController, WalletController, WalletTransferController};
+use App\Http\Controllers\{CategoryController, DashboardController, DocumentController, IncomeController, InvestmanController, MutationController, TransactionController, WalletController, WalletTransferController};
 use App\Http\Controllers\Debt\{IndebtednesController, ReceivableController};
 use Inertia\Inertia;
 use Jenssegers\Agent\Agent;
@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('mutation', MutationController::class);
     Route::resource('wallet-transfer', WalletTransferController::class);
     Route::resource('investman', InvestmanController::class);
+    Route::resource('document', DocumentController::class);
 });
 
 require __DIR__ . '/settings.php';

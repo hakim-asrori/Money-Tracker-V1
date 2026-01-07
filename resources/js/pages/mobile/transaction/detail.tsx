@@ -100,7 +100,7 @@ export default function Detail({
                     <CardContent className="space-y-2">
                         <div className="flex items-center justify-between gap-2">
                             <h1 className="text-sm">Description</h1>
-                            <h1 className="font-bold">
+                            <h1 className="text-right font-bold">
                                 {transaction.description}
                             </h1>
                         </div>

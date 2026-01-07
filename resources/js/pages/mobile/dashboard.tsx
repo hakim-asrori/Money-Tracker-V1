@@ -7,13 +7,12 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import AppMobileLayout from '@/layouts/app/app-mobile-layout';
-import { formatNumber } from '@/lib/utils';
-import { dashboard } from '@/routes';
+import { formatNumber, showToast } from '@/lib/utils';
 import debt from '@/routes/debt';
 import income from '@/routes/income';
 import transaction from '@/routes/transaction';
 import walletTransfer from '@/routes/wallet-transfer';
-import { SharedData, type BreadcrumbItem } from '@/types';
+import { DocumentSourceInterface, SharedData } from '@/types';
 import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ArrowRightLeftIcon,
@@ -23,22 +22,11 @@ import {
     TrendingUpDownIcon,
     UploadCloudIcon,
 } from 'lucide-react';
-
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard().url,
-    },
-];
-
-type MutationChart = {
-    date: string;
-    total_db: number;
-    total_cr: number;
-};
+import { useEffect } from 'react';
 
 export default function Dashboard({
     summaries,
+    documentSources,
 }: {
     summaries: {
         totalIncomes: number;
@@ -47,11 +35,16 @@ export default function Dashboard({
         totalDebts: number;
         totalBalance: number;
     };
+    documentSources: DocumentSourceInterface[];
 }) {
-    const { auth } = usePage<SharedData>().props;
+    const { auth, flash } = usePage<SharedData>().props;
+
+    useEffect(() => {
+        showToast(flash);
+    }, [flash]);
 
     return (
-        <AppMobileLayout>
+        <AppMobileLayout documentSources={documentSources}>
             <Head title="Dashboard" />
             <HeaderApp />
             <div className="text-sm">

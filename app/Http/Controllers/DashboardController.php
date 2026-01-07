@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Debt, Income, Mutation, Transaction, Wallet, WalletTransfer};
+use App\Models\{Debt, DocumentSource, Income, Mutation, Transaction, Wallet, WalletTransfer};
 use Inertia\Inertia;
 use Jenssegers\Agent\Agent;
 
@@ -22,6 +22,8 @@ class DashboardController extends Controller
         $totalBalance = Wallet::where('user_id', $user->id)->sum('balance');
 
         if ($agent->isMobile()) {
+            $documentSources = DocumentSource::all();
+
             return Inertia::render('mobile/dashboard', [
                 'summaries' => [
                     'totalIncomes' => $totalIncomes,
@@ -30,6 +32,7 @@ class DashboardController extends Controller
                     'totalDebts' => $totalDebts,
                     'totalBalance' => $totalBalance
                 ],
+                'documentSources' => $documentSources
             ]);
         }
 

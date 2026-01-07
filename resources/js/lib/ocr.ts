@@ -38,11 +38,16 @@ export function scoreLine(line: string, source: string): number {
     let score = 0;
 
     if (source.toLowerCase() === SOURCES.INDOMARET) {
-        // ❌ Langsung reject kalau layanan konsumen / info
+        // ❌
         if (new RegExp(REGEX_SOURCE.INDOMARET, 'i').test(line)) return 0;
 
         // ❌ Reject voucher
         if (/^VC\s/i.test(line)) return 0;
+    }
+
+    if (source.toLowerCase() === SOURCES.ALFAMART) {
+        // ❌
+        if (new RegExp(REGEX_SOURCE.ALFAMART, 'i').test(line)) return 0;
     }
 
     // ✅ Banyak huruf besar → indikasi nama barang
@@ -95,6 +100,10 @@ export function extractTotal(text: string, source: string): number {
         );
     }
 
+    if (source.toLowerCase() === SOURCES.ALFAMART) {
+        match = text.match(new RegExp(`(Total Belanja)[^\\d]*(\\d+)`, 'i'));
+    }
+
     return match ? Number(match[2]) : 0;
 }
 
@@ -108,6 +117,10 @@ export function extractDiscount(text: string, source: string): number {
 
     if (source.toLowerCase() === SOURCES.INDOMARET) {
         match = text.match(new RegExp(`(ANDA HEMAT)[^\\d]*(\\d+)`, 'i'));
+    }
+
+    if (source.toLowerCase() === SOURCES.ALFAMART) {
+        match = text.match(new RegExp(`(Total Disc)[^\\d]*(\\d+)`, 'i'));
     }
 
     return match ? Number(match[2]) : 0;

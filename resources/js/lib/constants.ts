@@ -8,4 +8,5 @@ export const SOURCES = {
 
 export const REGEX_SOURCE = {
     INDOMARET: 'TOTAL|PPN|HARGA|HEMAT|ANDA HEMAT|NON TUNAI',
+    ALFAMART: 'Total Belanja|Total Item|Tunai|Kembalian|PPN',
 };

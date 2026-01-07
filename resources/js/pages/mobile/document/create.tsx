@@ -248,14 +248,14 @@ function Section({
 
         try {
             const result = await runOCR(document!);
+            const normalized = normalizeText(result);
 
-            if (result.toLowerCase().search(regex) === -1) {
+            if (normalized.toLowerCase().search(regex) === -1) {
                 return showToast({
                     warning: "Document doesn't match",
                 });
             }
 
-            const normalized = normalizeText(result);
             const lines = splitLines(normalized);
 
             const products = extractProducts(lines, source.name)

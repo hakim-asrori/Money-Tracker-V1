@@ -146,15 +146,32 @@ function Section({
     // Camera initialization and cleanup
     useEffect(() => {
         navigator.mediaDevices
-            .getUserMedia({ video: true })
+            .getUserMedia({
+                video: {
+                    facingMode: {
+                        exact: 'environment',
+                    },
+                },
+            })
             .then((stream) => {
                 if (videoRef.current) {
                     videoRef.current.srcObject = stream;
                     videoRef.current.play();
                 }
             })
-            .catch(() => {
-                router.visit(dashboard().url);
+            .catch((error) => {
+                navigator.mediaDevices
+                    .getUserMedia({ video: true })
+                    .then((stream) => {
+                        if (videoRef.current) {
+                            videoRef.current.srcObject = stream;
+                            videoRef.current.play();
+                        }
+                    })
+                    .catch((err) => {
+                        console.error('Gagal mengakses kamera:', err);
+                        router.visit(dashboard().url);
+                    });
             });
 
         return () => {
@@ -657,7 +674,7 @@ function CameraMode({
                     autoPlay
                     playsInline
                     muted
-                    className="absolute inset-0 z-20 h-[80vh] w-full object-cover"
+                    className="absolute inset-0 z-20 h-[70vh] w-full object-cover"
                 />
             </div>
 

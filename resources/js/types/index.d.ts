@@ -161,3 +161,13 @@ export interface MutationInterface extends CommonColumn {
         | WalletTransferInterface
         | DebtInterface;
 }
+
+export interface JournalInterface {
+    date: string;
+    items: {
+        wallet: string;
+        description: string;
+        debet: string | number;
+        credit: string | number;
+    }[];
+}

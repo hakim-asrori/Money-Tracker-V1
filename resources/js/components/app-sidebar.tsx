@@ -9,7 +9,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+import { dashboard, journal } from '@/routes';
 import category from '@/routes/category';
 import debt from '@/routes/debt';
 import income from '@/routes/income';
@@ -20,10 +20,10 @@ import walletTransfer from '@/routes/wallet-transfer';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
-    ArrowLeftRightIcon,
     DownloadCloudIcon,
     LayoutDashboardIcon,
     ListCheckIcon,
+    ReceiptTextIcon,
     ShoppingCartIcon,
     UploadCloudIcon,
     Wallet2Icon,
@@ -87,9 +87,19 @@ const mainNavItems: NavItem[] = [
     //     icon: UploadCloudIcon,
     // },
     {
-        title: 'Mutations',
-        href: mutation.index().url,
-        icon: ArrowLeftRightIcon,
+        title: 'Reports',
+        href: '#',
+        icon: ReceiptTextIcon,
+        children: [
+            {
+                title: 'Journals',
+                href: journal().url,
+            },
+            {
+                title: 'Mutations',
+                href: mutation.index().url,
+            },
+        ],
     },
 ];
 

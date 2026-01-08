@@ -62,7 +62,7 @@ class MutationController extends Controller
             })
             ->toArray();
 
-        return Inertia::render('mutation', [
+        return Inertia::render('report/mutation', [
             'mutations' => $mutations,
             'inquiryGroups' => $inquiryGroups,
             'walletGroups' => $walletGroups,

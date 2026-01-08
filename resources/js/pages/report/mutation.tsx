@@ -23,7 +23,11 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
     {
-        title: 'Mutation',
+        title: 'Reports',
+        href: mutation.index().url,
+    },
+    {
+        title: 'Mutations',
         href: mutation.index().url,
     },
 ];

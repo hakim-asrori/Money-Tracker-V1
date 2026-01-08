@@ -43,11 +43,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('transaction/debt/payment/{target}', [TransactionController::class, 'debtPayment'])->name('transaction.debt.payment');
     Route::resource('transaction', TransactionController::class);
-    Route::resource('mutation', MutationController::class);
     Route::resource('wallet-transfer', WalletTransferController::class);
     Route::resource('investman', InvestmanController::class);
     Route::resource('document', DocumentController::class);
-    Route::get('journal', JournalController::class)->name('journal');
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('mutation', MutationController::class)->name('mutation');
+
+        Route::prefix('journal')->name('journal.')->group(function () {
+            Route::get('/', [JournalController::class, 'index'])->name('index');
+            Route::get('/export-{type}', [JournalController::class, 'export'])->name('export');
+        });
+    });
 });
 
 require __DIR__ . '/settings.php';

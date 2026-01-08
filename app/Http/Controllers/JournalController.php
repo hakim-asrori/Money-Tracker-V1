@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\JournalExport;
 use App\Models\Mutation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class JournalController extends Controller
 {
-    /**
-     * Handle the incoming request.
-     */
-    public function __invoke(Request $request)
+    public function index(Request $request)
     {
         $user = Auth::user();
         $mutations = Mutation::query()
@@ -53,5 +52,19 @@ class JournalController extends Controller
             'journals' =>  $request->filled('month') && $request->filled('year') ? $journals : [],
             'type' => $type
         ]);
+    }
+
+    public function export($type, Request $request)
+    {
+        if ($type === 'excel') {
+            $request->validate([
+                'year' => 'required|integer',
+                'month' => 'required|integer',
+            ]);
+
+            return Excel::download(new JournalExport($request->get('year'), $request->get('month'), Auth::user()->id), "journal-{$request->get('year')}-{$request->get('month')}.xlsx");
+        }
+
+        return abort(404);
     }
 }

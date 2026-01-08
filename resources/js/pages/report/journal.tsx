@@ -1,6 +1,6 @@
 import Heading from '@/components/heading';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
     Card,
     CardContent,
@@ -25,16 +25,18 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { formatNumber } from '@/lib/utils';
-import { dashboard, journal } from '@/routes';
-import { BreadcrumbItem, JournalInterface } from '@/types';
-import { Head, Link } from '@inertiajs/react';
+import { cn, formatNumber } from '@/lib/utils';
+import { dashboard } from '@/routes';
+import reports from '@/routes/reports';
+import { BreadcrumbItem, JournalInterface, SharedData } from '@/types';
+import { Head, Link, usePage } from '@inertiajs/react';
 import {
     ChevronLeftIcon,
     DownloadIcon,
     InfoIcon,
     SendHorizonalIcon,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -43,11 +45,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Reports',
-        href: journal().url,
+        href: reports.journal.index().url,
     },
     {
         title: 'Journals',
-        href: journal().url,
+        href: reports.journal.index().url,
     },
 ];
 
@@ -58,27 +60,64 @@ export default function Journal({
     journals: JournalInterface[];
     type: 'ready' | 'not-ready' | 'empty';
 }) {
+    const urlSearchString = window.location.search;
+    const params = new URLSearchParams(urlSearchString);
+
     const currentYear = new Date().getFullYear();
+    const page = usePage().props as any as SharedData;
+
+    const [errors, setErrors] = useState<string[]>([]);
+
+    useEffect(() => {
+        if (page.errors && Object.keys(page.errors).length > 0) {
+            setErrors(Object.values(page.errors));
+        }
+    }, [page.errors]);
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Journals" />
             <Heading title="Journals">
-                <div className="space-x-2">
+                <div className="flex items-center space-x-2">
                     {(type === 'ready' || type === 'empty') && (
                         <Button variant={'outline'} asChild>
-                            <Link href={journal().url}>
+                            <Link href={reports.journal.index().url}>
                                 <ChevronLeftIcon /> Back
                             </Link>
                         </Button>
                     )}
                     {type === 'ready' && (
-                        <Button>
+                        <a
+                            className={cn(buttonVariants({}))}
+                            href={
+                                reports.journal.export(
+                                    { type: 'excel' },
+                                    {
+                                        mergeQuery: {
+                                            year: params.get('year'),
+                                            month: params.get('month'),
+                                        },
+                                    },
+                                ).url
+                            }
+                            target="_blank"
+                        >
                             <DownloadIcon /> Download
-                        </Button>
+                        </a>
                     )}
                 </div>
             </Heading>
+
+            {errors.length > 0 && (
+                <Alert variant="destructive">
+                    <InfoIcon className="mr-2 h-4 w-4" />
+                    <AlertDescription>
+                        {errors.map((error, index) => (
+                            <p key={index}>{error}</p>
+                        ))}
+                    </AlertDescription>
+                </Alert>
+            )}
 
             {type === 'ready' ? (
                 <Table>
@@ -115,18 +154,23 @@ export default function Journal({
                                     </TableCell>
                                     <TableCell className="font-bold">
                                         {item.debet !== '-'
-                                            ? `Rp ${formatNumber(item.debet)}`
+                                            ? `${formatNumber(item.debet)}`
                                             : '-'}
                                     </TableCell>
                                     <TableCell className="font-bold">
                                         {item.credit !== '-'
-                                            ? `Rp ${formatNumber(item.credit)}`
+                                            ? `${formatNumber(item.credit)}`
                                             : '-'}
                                     </TableCell>
                                 </TableRow>
                             )),
                         )}
                     </TableBody>
+                    {/* <TableFooter>
+                        <TableRow>
+                            <TableHead className="font-bold">Total</TableHead>
+                        </TableRow>
+                    </TableFooter> */}
                 </Table>
             ) : type === 'empty' ? (
                 <Alert variant={'destructive'}>

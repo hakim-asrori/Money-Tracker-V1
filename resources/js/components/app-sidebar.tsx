@@ -9,11 +9,11 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard, journal } from '@/routes';
+import { dashboard } from '@/routes';
 import category from '@/routes/category';
 import debt from '@/routes/debt';
 import income from '@/routes/income';
-import mutation from '@/routes/mutation';
+import reports from '@/routes/reports';
 import transaction from '@/routes/transaction';
 import wallet from '@/routes/wallet';
 import walletTransfer from '@/routes/wallet-transfer';
@@ -93,11 +93,11 @@ const mainNavItems: NavItem[] = [
         children: [
             {
                 title: 'Journals',
-                href: journal().url,
+                href: reports.journal.index().url,
             },
             {
                 title: 'Mutations',
-                href: mutation.index().url,
+                href: reports.mutation().url,
             },
         ],
     },

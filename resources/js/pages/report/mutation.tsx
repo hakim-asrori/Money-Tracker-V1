@@ -12,7 +12,7 @@ import {
 import AppLayout from '@/layouts/app-layout';
 import { getModelNamePretty } from '@/lib/utils';
 import { dashboard } from '@/routes';
-import mutation from '@/routes/mutation';
+import reports from '@/routes/reports';
 import { BreadcrumbItem, MetaPagination, MutationInterface } from '@/types';
 import { Head, useForm } from '@inertiajs/react';
 import { useEffect } from 'react';
@@ -24,11 +24,11 @@ const breadcrumbs: BreadcrumbItem[] = [
     },
     {
         title: 'Reports',
-        href: mutation.index().url,
+        href: reports.mutation().url,
     },
     {
         title: 'Mutations',
-        href: mutation.index().url,
+        href: reports.mutation().url,
     },
 ];
 
@@ -60,7 +60,7 @@ export default function Mutation({
     });
 
     const handleFilter = () => {
-        get(mutation.index().url, {
+        get(reports.mutation().url, {
             preserveState: true,
         });
     };

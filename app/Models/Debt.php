@@ -47,7 +47,15 @@ class Debt extends Model
     /**
      * The attributes that should be cast to native types.
      */
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'wallet_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected $casts = [
+        'id' => 'integer',
+        'user_id' => 'integer',
+        'wallet_id' => 'integer',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'published_at' => 'datetime',
+        'deleted_at' => 'datetime'
+    ];
 
     public function wallet()
     {

@@ -37,7 +37,7 @@ class WalletTransfer extends Model
     /**
      * The attributes that should be cast to native types.
      */
-    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'wallet_origin_id' => 'integer', 'wallet_target_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime'];
+    protected $casts = ['id' => 'integer', 'user_id' => 'integer', 'wallet_origin_id' => 'integer', 'wallet_target_id' => 'integer', 'created_at' => 'datetime', 'updated_at' => 'datetime', 'deleted_at' => 'datetime', 'published_at' => 'datetime'];
 
     public function walletOrigin()
     {

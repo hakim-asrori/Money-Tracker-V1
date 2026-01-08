@@ -22,6 +22,10 @@ class DebtTarget extends Model
         'due_date',
     ];
 
+    protected $casts = [
+        'due_date' => 'datetime',
+    ];
+
     public function debt()
     {
         return $this->belongsTo(Debt::class)->withTrashed();

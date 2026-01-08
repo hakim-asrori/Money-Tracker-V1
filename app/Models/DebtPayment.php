@@ -18,6 +18,10 @@ class DebtPayment extends Model
         'paid_at'
     ];
 
+    protected $casts = [
+        'paid_at' => 'datetime'
+    ];
+
     public function walletOrigin()
     {
         return $this->belongsTo(Wallet::class, 'wallet_origin_id')->withTrashed();

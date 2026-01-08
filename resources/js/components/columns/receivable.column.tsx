@@ -91,9 +91,9 @@ export const columns = (props: Props): ColumnDef<DebtInterface>[] => {
                         Rp {formatNumber(row.original.total_remaining_amount)}
                     </div>
                 ) : (
-                    <div className="text-green-500">
-                        <CheckCircleIcon />
-                        <span className="text-base">Paid</span>
+                    <div className="flex items-center gap-1 font-semibold text-green-500">
+                        <CheckCircleIcon size={16} />
+                        <span>Paid</span>
                     </div>
                 );
             },

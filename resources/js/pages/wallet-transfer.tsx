@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import AppLayout from '@/layouts/app-layout';
-import { showToast } from '@/lib/utils';
+import { formatNumber, showToast } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import category from '@/routes/category';
 import walletTransfer from '@/routes/wallet-transfer';
@@ -255,7 +255,10 @@ export default function WalletTransfers({
                                                             key={wallet.id}
                                                             value={wallet.id.toString()}
                                                         >
-                                                            {wallet.name}
+                                                            {wallet.name} - Rp{' '}
+                                                            {formatNumber(
+                                                                wallet.balance,
+                                                            )}
                                                         </SelectItem>
                                                     ))}
                                             </SelectContent>
@@ -287,7 +290,10 @@ export default function WalletTransfers({
                                                             key={wallet.id}
                                                             value={wallet.id.toString()}
                                                         >
-                                                            {wallet.name}
+                                                            {wallet.name} - Rp{' '}
+                                                            {formatNumber(
+                                                                wallet.balance,
+                                                            )}
                                                         </SelectItem>
                                                     ))}
                                             </SelectContent>

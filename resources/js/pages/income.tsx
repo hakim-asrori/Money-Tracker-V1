@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import AppLayout from '@/layouts/app-layout';
-import { showToast } from '@/lib/utils';
+import { formatNumber, showToast } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import income from '@/routes/income';
 import {
@@ -273,7 +273,8 @@ function FormIncome({
                                         key={wallet.id}
                                         value={wallet.id.toString()}
                                     >
-                                        {wallet.name}
+                                        {wallet.name} - Rp{' '}
+                                        {formatNumber(wallet.balance)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>

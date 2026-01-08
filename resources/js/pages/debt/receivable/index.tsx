@@ -284,7 +284,8 @@ function FormDebt({
                                         key={wallet.id}
                                         value={wallet.id.toString()}
                                     >
-                                        {wallet.name}
+                                        {wallet.name} - Rp{' '}
+                                        {formatNumber(wallet.balance)}
                                     </SelectItem>
                                 ))}
                             </SelectContent>
@@ -404,7 +405,8 @@ function FormPayment({
                                 key={wallet.id}
                                 value={wallet.id.toString()}
                             >
-                                {wallet.name}
+                                {wallet.name} - Rp{' '}
+                                {formatNumber(wallet.balance)}
                             </SelectItem>
                         ))}
                     </SelectContent>

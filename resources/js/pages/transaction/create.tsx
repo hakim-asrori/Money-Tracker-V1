@@ -21,7 +21,7 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import AppLayout from '@/layouts/app-layout';
-import { showToast } from '@/lib/utils';
+import { formatNumber, showToast } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import transaction from '@/routes/transaction';
 import {
@@ -125,7 +125,10 @@ export default function CreateTransaction({
                                                         key={wallet.id}
                                                         value={wallet.id.toString()}
                                                     >
-                                                        {wallet.name}
+                                                        {wallet.name} - Rp{' '}
+                                                        {formatNumber(
+                                                            wallet.balance,
+                                                        )}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>

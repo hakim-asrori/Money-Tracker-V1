@@ -28,6 +28,7 @@ class Wallet extends Model
         'category_id',
         'name',
         'balance',
+        'account_id'
     ];
 
     protected $hidden = ['category_id', 'user_id'];
@@ -55,5 +56,10 @@ class Wallet extends Model
     public function user()
     {
         return $this->belongsTo(User::class)->withTrashed();
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class)->withTrashed();
     }
 }

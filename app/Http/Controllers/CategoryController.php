@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\{Auth, DB};
 use App\Enums\CategoryTypeConstant;
 use App\Models\Category;
+use App\Services\JournalService;
 use Inertia\Inertia;
 
 class CategoryController extends Controller
@@ -62,11 +63,13 @@ class CategoryController extends Controller
         DB::beginTransaction();
 
         try {
-            $this->category->create([
+            $category = $this->category->create([
                 'name' => $request->name,
                 'type' => $request->type,
                 'user_id' => $this->user->id
             ]);
+
+            JournalService::attachAccountToCategory($category);
 
             DB::commit();
             return redirect()->back()->with('success', 'Category created successfully');
@@ -103,6 +106,8 @@ class CategoryController extends Controller
                 'name' => $request->name,
                 'type' => $request->type
             ]);
+
+            JournalService::attachAccountToCategory($category, true);
 
             DB::commit();
             return redirect()->back()->with('success', 'Category updated successfully');

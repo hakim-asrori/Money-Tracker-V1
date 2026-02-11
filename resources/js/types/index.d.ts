@@ -162,12 +162,21 @@ export interface MutationInterface extends CommonColumn {
         | DebtInterface;
 }
 
-export interface JournalInterface {
-    date: string;
-    items: {
-        wallet: string;
-        description: string;
-        debet: string | number;
-        credit: string | number;
-    }[];
+export interface JournalEntryInterface extends CommonColumn {
+    description: string;
+    journal_date: string;
+    lines: JournalLinesInterface[];
+}
+
+export interface JournalLinesInterface extends CommonColumn {
+    debit: string;
+    credit: string;
+    description: string;
+    account: AccountInterface;
+}
+
+export interface AccountInterface extends CommonColumn {
+    code: string;
+    name: string;
+    type: string;
 }

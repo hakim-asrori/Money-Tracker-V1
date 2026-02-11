@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\{Model, SoftDeletes};
+
+class JournalLine extends Model
+{
+    use SoftDeletes;
+
+    protected $fillable = [
+        'journal_entry_id',
+        'account_id',
+        'debit',
+        'credit',
+        'description'
+    ];
+
+    public function journalEntry()
+    {
+        return $this->belongsTo(JournalEntry::class);
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class);
+    }
+}

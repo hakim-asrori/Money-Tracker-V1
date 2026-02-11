@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\{Auth, DB};
 use Illuminate\Validation\Rule;
 use App\Enums\CategoryTypeConstant;
 use App\Models\{Category, Mutation, Wallet};
-use App\Services\WalletService;
+use App\Services\{JournalService, WalletService};
 use Inertia\Inertia;
 use Jenssegers\Agent\Agent;
 
@@ -96,6 +96,8 @@ class WalletController extends Controller
                 'user_id' => $this->user->id
             ]);
 
+            JournalService::attachAccountToWallet($wallet);
+
             if ($request->balance > 0) {
                 WalletService::createWalletMutation($wallet, $this->user->id, $wallet->id, $request->balance, Mutation::TYPE_CR);
             }
@@ -161,6 +163,8 @@ class WalletController extends Controller
                 'category_id' => $request->category,
                 'name' => $request->name,
             ]);
+
+            JournalService::attachAccountToWallet($wallet, true);
 
             DB::commit();
             return redirect()->back()->with('success', 'Wallet updated successfully');

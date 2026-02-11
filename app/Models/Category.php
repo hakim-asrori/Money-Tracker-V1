@@ -22,7 +22,8 @@ class Category extends Model
         'user_id',
         'name',
         'type',
-        'status'
+        'status',
+        'account_id',
     ];
 
     protected $hidden = [
@@ -54,5 +55,10 @@ class Category extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class)->withTrashed();
+    }
+
+    public function account()
+    {
+        return $this->belongsTo(Account::class)->withTrashed();
     }
 }

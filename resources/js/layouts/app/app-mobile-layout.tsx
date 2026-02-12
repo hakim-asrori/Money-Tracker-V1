@@ -14,7 +14,7 @@ import { LoadingProvider } from '@/contexts/loading-context';
 import { limitString } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import document from '@/routes/document';
-import mutation from '@/routes/mutation';
+import reports from '@/routes/reports';
 import wallet from '@/routes/wallet';
 import { DocumentSourceInterface } from '@/types';
 import { Link, router } from '@inertiajs/react';
@@ -64,7 +64,7 @@ export default function AppMobileLayout({
                                 <HomeIcon size={20} />
                             </Link>
                             <Link
-                                href={mutation.index()}
+                                href={reports.mutation()}
                                 className="rounded-full p-2"
                             >
                                 <HistoryIcon size={20} />
@@ -88,7 +88,7 @@ export default function AppMobileLayout({
                                 <WalletIcon size={20} />
                             </Link>
                             <Link
-                                href={mutation.index()}
+                                href={reports.mutation()}
                                 className="rounded-full p-2"
                             >
                                 <UserIcon size={20} />

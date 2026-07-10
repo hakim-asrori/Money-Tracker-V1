@@ -7,7 +7,21 @@ use Inertia\Inertia;
 use Jenssegers\Agent\Agent;
 
 Route::get('/', function () {
-    return Inertia::render('welcome');
+    // Create token header as a JSON string
+    $header = json_encode(['type' => 'JWT', 'alg' => 'HS256']);
+    // Create token payload as a JSON string
+    $payload = json_encode((object) []);
+    // Encode Header to Base64Url String
+    $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+    // Encode Payload to Base64Url String
+    $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+    // Create Signature Hash
+    $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, 'b24xaE1RRklCNjNOS0sxQQ==', true);
+    // Encode Signature to Base64Url String
+    $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+    // Create JWT
+    $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
+    dd($jwt, $header, $payload, $base64UrlHeader, $base64UrlPayload, $signature, $base64UrlSignature);
 })->name('home');
 Route::get('/privacy', function () {
     return Inertia::render('privacy');
